@@ -18,6 +18,9 @@ int main( void )
         printf( "-------------\r\n" );
         
     }
+
+    led_con_all( LED_ON );
+    led_con_all( LED_OFF );
     
     return 0;
 }

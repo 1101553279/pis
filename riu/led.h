@@ -18,6 +18,7 @@ typedef enum _led_no{
 
 void led_init( void );
 void led_con( led_no_t no, u8_t key );
+void led_con_all( u8_t key );
 
 
 /*

@@ -1,3 +1,0 @@
-dev branch
-master mod
-dev mod

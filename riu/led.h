@@ -7,13 +7,17 @@
 
 
 typedef enum _led_no{
-    LED_RUN,    // run led
-    LED_USB,    // usb led
-    LED_COM,    // communicate led
-    LED_ST,     // station play
-    LED_EMG,    // emg play
+    LED_RUN,    // 0 run led
+    LED_USB,    // 1 usb led
+    LED_COM,    // 2 communicate led
+    LED_ST,     // 3 station play
+    LED_EMG,    // 4 emg play
     MAX_LED,    
 }led_no_t;
+
+
+void led_init( void );
+void led_con( led_no_t no, u8_t key );
 
 
 /*

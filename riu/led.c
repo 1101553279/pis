@@ -1,6 +1,6 @@
 #include "led.h"
 #include <stdio.h>
-
+#include "debug.h"
 
 // internal structure
 struct riu_led{
@@ -14,8 +14,8 @@ struct riu_led{
 #define MODE_ZERO    0
 #define MODE_ONE     1
 
-#define LED_SET( gpio, pin )    printf( "## %#x, %d, set\r\n", (u32_t)gpio, pin )
-#define LED_RESET( gpio, pin )  printf( "## %#x, %d, reset\r\n", (u32_t)gpio, pin )
+#define LED_SET( gpio, pin )    do { dbg_out( "%#x, %d, set\r\n", (u32_t)gpio, pin ); }while(0)
+#define LED_RESET( gpio, pin )  do { dbg_out( "%#x, %d, reset\r\n", (u32_t)gpio, pin );}while( 0 )
 
 #define LED_CHON( mode, gpio, pin )   do{                               \
                                     if( MODE_ZERO == (mode) )           \

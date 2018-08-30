@@ -2,12 +2,19 @@
 #include <string.h>
 #include "debug.h"
 
-#define CACHE_SIZE  30 
+#define CACHE_SIZE  31 
 
 static un_t com_cache[ CACHE_SIZE ];
 
+void *com_cache_alloc( u16_t size )
+{
+    return com_cache;
+}
+
 s8_t com_init( com_t *com )
 {
+    void *cache;
+
     if( 0 == com )
         return -1;
    
@@ -16,8 +23,18 @@ s8_t com_init( com_t *com )
     com->front = 0;
     com->rear = 0;
 //    com->frame = 0;
-    com->size = CACHE_SIZE;
-    com->cache = com_cache;
+    cache = com_cache_alloc( CACHE_SIZE );
+    if( 0 != cache )
+    {
+        com->size = CACHE_SIZE;
+        com->cache = com_cache;
+    }
+    else
+    {
+        com->size = 0;
+        com->cache = 0;
+        return -2;
+    }
 
     return 0;
 }
@@ -140,6 +157,7 @@ void com_print( com_t *com )
     }
 
 #if 1    
+    out( "\n" );
     for( i=0; i < com->size; i++ )
         out( "%02x ", com->cache[i] );
     out( "\n" );

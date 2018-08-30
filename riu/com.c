@@ -15,7 +15,7 @@ void com_init( com_t *com )
 
     com->front = 0;
     com->rear = 0;
-    com->frame = 0;
+//    com->frame = 0;
     com->size = CACHE_SIZE;
     com->cache = com_cache;
 
@@ -79,7 +79,7 @@ u16_t com_frame( com_t *com )
     if( 0 == com )
         return 0;
 
-   return com->frame;
+//   return com->frame;
 }
 
 /* get cache size */

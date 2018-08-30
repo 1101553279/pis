@@ -9,7 +9,7 @@ typedef u8_t un_t;
 typedef struct com{
     u16_t front;        // loop queue front
     u16_t rear;         // loop queue rear
-    u16_t frame;        // frame number
+//    u16_t frame;        // frame number
     u16_t size;         // cache max size
     un_t *cache;        // data cache
 }com_t;

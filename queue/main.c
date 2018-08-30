@@ -17,6 +17,7 @@ int main( void )
     int i = 0;  
     un_t da;
     s8_t ret= 0;
+    s32_t index;
     com_t com;
     frame_t frame; 
     frame_t query; 
@@ -25,9 +26,9 @@ int main( void )
     un_t store[ ] = { 
                     0x02,0x42,0x35,0x03,0x38,0x3a,
                     0x02,0x42,0x37,0x03,0x38,0x38,
+#if 0
                     0x02,0x2,0x42,0x37,0x38,0x38,
                     0x02,0x2,0x42,0x37,0x39,0x39,
-#if 0
                     0x02,0x41,0x36,0x03,0x38,0x39,
                     0x02,0x42,0x36,0x03,0x38,0x39,
                     0x02,0x41,0x31,0x30,0x30,0x30,0x30,0x30,0x30,0x30,0x30,0x30,0x33,0x32,0x03,0x30,0x30, 
@@ -35,7 +36,7 @@ int main( void )
                     0x02,0x41,0x38,0x30,0x30,0x30,0x30,0x03,0x30,0x30,
 #endif
                     };
-#if 0 
+#if 1 
     out( ">> frame init & put two frames \n" );
     ret = frame_init( &frame, 0x02, 0x03, 0x41, 0 );
     if( 0 != ret )
@@ -57,15 +58,15 @@ int main( void )
 
     for( i = 0; i < 2; i++ )
     {
-//        len = frame_get( &frame, buff, sizeof(buff) ); 
-        len = frame_match_get( &frame, buff, sizeof(buff) ); 
+        len = frame_get( &frame, buff, sizeof(buff) ); 
+//        len = frame_match_get( &frame, buff, sizeof(buff) ); 
         if( 0 != len )
         {
             out( "frame get success!: i = %d, len = %d : ", i, len );
                 debug_dump( buff, len, print_hex ); 
         }
         else
-            out( "frame get fail!: i = %d \n", i );
+            out( "frame get fail!: i = %d, len = %d \n", i, len );
     }
 
 //    ret = frame_frame( &frame ); 
@@ -81,7 +82,7 @@ int main( void )
 
 #endif
 
-#if 1
+#if 0
     com_init( &com );
 #if 0
     com_push( &com, 0 );
@@ -172,6 +173,17 @@ int main( void )
             out( "push error: ret = %d, i = %d\n", ret , i );
     }
     com_print( &com );
+    
+    out( ">> com find !\n" );
+    for( i = 0; i < 7; i++ )
+    {
+        index = com_find( &com, i ); 
+        if( index >= 0 )
+            out( "find %d, find %d\n", i, index);
+        else 
+            out( "find %d, no find!\n", i );
+    }
+
 
 #endif
 

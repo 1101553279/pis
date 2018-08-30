@@ -17,6 +17,7 @@ typedef struct com{
 
 s8_t com_init( com_t *com );            /* init com */
 void com_reset( com_t *com );
+void com_clear( com_t *com );
 u16_t com_isfull( com_t *com );         /* wheter queue is full */
 u16_t com_isempty( com_t *com );        /* whether queue is empty */
 s32_t com_find( com_t *com, un_t da );

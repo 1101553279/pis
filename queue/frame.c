@@ -31,7 +31,7 @@ s8_t frame_put_one( frame_t *fm, un_t da )
          return -2;
 
 // for frame handle , spical handle, because data foramt: ...| tail | crc1 | crc2 |
-     if( (fm->head == da && 0 == fm->state) ||
+     if( (0 == fm->state && fm->head == da) ||
          (1 == fm->state && fm->tail == da) ||
           2 == fm->state ||
           3 == fm->state )
@@ -74,10 +74,11 @@ u16_t frame_get( frame_t *fm, un_t *buff, u16_t blen )
 
     if( 0 != ret )                      //pop error!
         return 0;
-    
-    if( 0 != com_find( com, fm->tail ) )    // no tail unit
+   
+//    out( "debug!\n" );
+    if( com_find( com, fm->tail ) < 0 )     // no tail unit
     {
-        com_push_rear( com, am );           // put return
+        com_push_rear( com, am );           // put head unit back
         return 0;
     }
 

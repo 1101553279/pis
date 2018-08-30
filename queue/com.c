@@ -2,7 +2,7 @@
 #include <string.h>
 #include "debug.h"
 
-#define CACHE_SIZE  11
+#define CACHE_SIZE  31
 
 static un_t com_cache[ CACHE_SIZE ];
 
@@ -41,11 +41,9 @@ s8_t com_init( com_t *com )
 
 void com_reset( com_t *com )
 {
-    u16_t bak;
     if( 0 == com )
         return;
    
-    bak = com->size; 
     if( 0 != com->cache )
         memset( com->cache, 0, com->size );
     
@@ -54,6 +52,21 @@ void com_reset( com_t *com )
 
     return;
 }
+
+void com_clear( com_t *com )
+{
+    if( 0 == com )
+        return;
+   
+    if( 0 != com->cache )
+        memset( com->cache, 0, com->size );
+    
+   com->front = 0; 
+   com->rear = 0;
+
+    return;
+}
+
 
 u16_t com_isempty( com_t *com )
 {
@@ -97,11 +110,14 @@ s8_t com_push_rear( com_t *com, un_t da )
         return -1;
 
     if( com_isfull( com ) )
+    {
+        com_clear( com );      // clear data
         return -2;
+    }
     
-    index = (0 == com->rear ) ?  com->size-1: --com->rear;
-    com->cache[ index ] = da;
-    com->rear = index;      // need for inde == com->size-1
+    com->rear = (0 == com->rear) ? com->size-1: com->rear-1;
+    com->cache[ com->rear ] = da;
+//    com->rear = index;      // need for inde == com->size-1
 
     return 0; 
 }
@@ -112,7 +128,10 @@ s8_t com_push( com_t *com, un_t da )
        return -1; 
     
     if( com_isfull( com ) )
+    {
+        com_clear( com );
         return -2;
+    }
 
     com->cache[ com->front ] = da; 
     com->front = (com->front+1) % com->size;

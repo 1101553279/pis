@@ -1,7 +1,16 @@
 #include <stdio.h>
 #include "led.h"
 #include "com.h"
+#include "frame.h"
 #include "debug.h"
+
+
+
+
+u8_t frame_match( un_t master, un_t slave )
+{
+    return master == slave;
+}
 
 int main( void )
 {
@@ -9,18 +18,22 @@ int main( void )
     un_t da;
     s8_t ret= 0;
     com_t com;
-    
-    com_init( &com );
+    frame_t frame; 
+#if 1 
+    frame_init( &frame, 0x02, 0x03, 0x41, frame_match );
+
+
+#endif
+
 #if 0
+    com_init( &com );
     com_push( &com, 0 );
 
     if( com_in( &com, 0 ) )
         out( "0 in com \n" );
     else
         out( "0 not in com \n" );
-#endif
     
-#if 0
     out( ">>. com start\n" );
     com_print( &com );
 
@@ -72,7 +85,7 @@ int main( void )
 
 #endif
 
-#if 1
+#if 0
 //   printf( " LED_RUN = %d\n", LED_RUN );        // output 0
 
 //init

@@ -1,6 +1,6 @@
 # Source, Executable, Includes, Library Defines
 INCL   = 
-SRC    = main.c led.c com.c frame.c ptime.c
+SRC    = main.c led.c com.c frame.c ptime.c parse.c
 OBJ    = $(SRC:.c=.o)
 LIBS   = 
 EXE    = a.out
@@ -8,7 +8,8 @@ EXE    = a.out
 # Compiler, Linker Defines
 CC      = /usr/bin/gcc
 #CFLAGS  = -ansi -pedantic -Wall -O2
-CFLAGS  = 
+# -w for close warning
+CFLAGS  =  -w	
 LIBPATH = -L.
 LDFLAGS = -o $(EXE) $(LIBPATH) $(LIBS)
 CFDEBUG = -ansi -pedantic -Wall -g -DDEBUG $(LDFLAGS)

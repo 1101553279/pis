@@ -6,10 +6,10 @@
 
 static un_t com_cache[ CACHE_SIZE ];
 
-void com_init( com_t *com )
+s8_t com_init( com_t *com )
 {
     if( 0 == com )
-        return;
+        return -1;
    
     memset( com_cache, 0, sizeof(com_cache) ); 
 
@@ -19,7 +19,7 @@ void com_init( com_t *com )
     com->size = CACHE_SIZE;
     com->cache = com_cache;
 
-    return;
+    return 0;
 }
 
 u16_t com_isempty( com_t *com )
@@ -50,7 +50,7 @@ s8_t com_push( com_t *com, un_t da )
 
 s8_t com_pop( com_t *com, un_t *da )
 {
-    if( 0 == com )
+    if( 0 == com || 0 == da )
         return -1;
 
     if( com_isempty(com ) )
@@ -62,25 +62,6 @@ s8_t com_pop( com_t *com, un_t *da )
     return 0;
 }
 
-s8_t com_pop_frame( com_t *com, un_t *buff, u16_t *len )
-{
-    return 0;
-}
-
-u8_t com_type( un_t da )
-{
-    
-    return 0;
-}
-
-/* get frame's number */
-u16_t com_frame( com_t *com )
-{   
-    if( 0 == com )
-        return 0;
-
-//   return com->frame;
-}
 
 /* get cache size */
 u16_t com_size( com_t *com )

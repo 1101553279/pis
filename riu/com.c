@@ -2,7 +2,7 @@
 #include <string.h>
 #include "debug.h"
 
-#define CACHE_SIZE  11
+#define CACHE_SIZE  30 
 
 static un_t com_cache[ CACHE_SIZE ];
 
@@ -57,6 +57,7 @@ s8_t com_pop( com_t *com, un_t *da )
         return -2;
 
     *da = com->cache[ com->rear ];
+    com->cache[ com->rear ] = 0;        // clear unit
     com->rear = (com->rear+1) % com->size;
 
     return 0;
@@ -120,14 +121,16 @@ void com_print( com_t *com )
                     ( 0 == com_isempty(com) ? "no": "yes") );
     out( "rear = %u, front = %u\n", com->rear, com->front ); 
    
-    
+#if 1    
     for( i=0; i < com->size; i++ )
         out( "%02d ", i );
     out( "\n" );
-
+#endif
     for( i=0; i < com->size; i++ )
     {
         out( "%-2c ", ( 1 ==  com_in( com, i ) ) ? '*': '-');
+        if((i+1) % 30 == 0 )       // 30 unit put newline
+            out("\n" );
 #if 0
         if( com_in( com, i ) )
             out( "* " );
@@ -135,6 +138,12 @@ void com_print( com_t *com )
             out( "- " );
 #endif
     }
+
+#if 1    
+    for( i=0; i < com->size; i++ )
+        out( "%02x ", com->cache[i] );
+    out( "\n" );
+#endif
 
     out( "\n\n" );
 

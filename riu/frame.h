@@ -36,5 +36,6 @@ u8_t frame_frame( frame_t *fm );
 // for debug
 s8_t frame_query( frame_t *fm, frame_t *info );
 
+void frame_print( frame_t *fm );
 
 #endif

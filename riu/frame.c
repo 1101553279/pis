@@ -1,10 +1,11 @@
 #include "frame.h"
+#include "debug.h"
 #include <string.h>
 
 /* init head tail addr match information for frame module */
 s8_t frame_init( frame_t *fm, un_t head, un_t tail, un_t addr, match_t match )
 {
-    if( 0 == fm );
+    if( 0 == fm )
         return -1;
     
     fm->head = head;
@@ -14,6 +15,8 @@ s8_t frame_init( frame_t *fm, un_t head, un_t tail, un_t addr, match_t match )
     fm->frame = 0;
     fm->match = match;
 
+//    out( "head: %#x, tail: %#x, addr: %#x, state: %d, frame = %d, match: %#x \r\n",
+//         fm->head, fm->tail, fm->addr, fm->state, fm->frame, fm->match );
     return com_init( &fm->com ); 
 }
 
@@ -53,8 +56,9 @@ u16_t frame_get( frame_t *fm, un_t *buff, u16_t blen )
     s8_t ret;       // for pop return
     com_t *com;
 
-    if( 0 == fm || 0 == buff || 0 == blen )
-        return 0;
+    /* para error && no frame */
+    if( 0 == fm || 0 == fm->frame || 0 == buff || 0 == blen )
+       return 0;
 
     com = &fm->com; 
 
@@ -101,8 +105,11 @@ u16_t frame_match_get( frame_t *fm, un_t *buff, u16_t blen )
         return 0;
     
     len = frame_get( fm, buff, blen );
-    while( len > 3 && 0 == fm->match(buff[2], fm->addr ) )
-        len = frame_get( fm, buff, blen );
+    if( 0 != fm->match )        // match  address
+    {
+        while( len > 1 && 0 == fm->match(buff[1], fm->addr) )
+            len = frame_get( fm, buff, blen );
+    }
 
     return len;
 }
@@ -147,4 +154,24 @@ s8_t frame_query( frame_t *fm, frame_t *info )
         memcpy( info->com.cache, fm->com.cache, fm->com.size );
 
     return 0;
+}
+
+void frame_print( frame_t *fm )
+{
+    u16_t size;
+    u16_t i;
+
+    if( 0 == fm )
+        return ;
+    
+    out( "head: %#x, tail: %#x, addr: %#x, state: %d, frame = %d, match: %#x \r\n",
+          fm->head, fm->tail, fm->addr, fm->state, fm->frame, fm->match );
+    
+    out( "\n" );
+
+    com_print( &fm->com );
+
+    out( "\n" );
+
+    return;
 }

@@ -12,6 +12,10 @@
 #define out(fmt, args...)       \
         do { printf(fmt, ##args ); }while( 0 )
 
+void print_char( u8_t ch );
+void print_dec( u8_t in );
+void print_hex( u8_t hex );
+void debug_dump( u8_t *buff, u16_t len, void (*print)(u8_t ch ) );
 
 /* function debug function implementation */
 #if 0

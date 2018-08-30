@@ -19,9 +19,57 @@ int main( void )
     s8_t ret= 0;
     com_t com;
     frame_t frame; 
+    un_t buff[ 100 ]; 
+    u16_t len;
+    un_t store[ ] = { 
+                    0x02,0x42,0x35,0x03,0x38,0x3a,
+                    0x02,0x42,0x37,0x03,0x38,0x38,
+                    0x02,0x41,0x36,0x03,0x38,0x39,
+                    0x02,0x42,0x36,0x03,0x38,0x39,
+#if 0
+                    0x02,0x41,0x31,0x30,0x30,0x30,0x30,0x30,0x30,0x30,0x30,0x30,0x33,0x32,0x03,0x30,0x30, 
+                    0x02,0x41,0x32,0x03,0x38,0x3d,
+                    0x02,0x41,0x38,0x30,0x30,0x30,0x30,0x03,0x30,0x30,
+#endif
+                    };
 #if 1 
-    frame_init( &frame, 0x02, 0x03, 0x41, frame_match );
+    out( ">> frame init & put two frames \n" );
+    ret = frame_init( &frame, 0x02, 0x03, 0x41, 0 );
+    if( 0 != ret )
+        out( "frame_init fault!\n" );
 
+    frame_match_set( &frame, frame_match );
+
+    for( i= 0; i < sizeof(store); i++ )
+    {
+        ret = frame_put_one( &frame, store[i] );
+        if( 0 != ret )
+            out( "frame put one fail!: i = %d, data = %#x\n", i, store[i] );
+    }
+    
+    frame_print( &frame ); 
+    
+//    ret = frame_frame( &frame ); 
+//    out( "frame frame = %d\n", ret );
+
+    for( i = 0; i < 1; i++ )
+    {
+//        len = frame_get( &frame, buff, sizeof(buff) ); 
+        len = frame_match_get( &frame, buff, sizeof(buff) ); 
+        if( 0 != len )
+        {
+            out( "frame get success!: i = %d, len = %d : ", i, len );
+                debug_dump( buff, len, print_hex ); 
+        }
+        else
+            out( "frame get fail!: i = %d \n", i );
+    }
+
+//    ret = frame_frame( &frame ); 
+//    out( "frame frame = %d\n", ret );
+
+    out( "\n" );
+    frame_print( &frame );
 
 #endif
 

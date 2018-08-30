@@ -73,6 +73,7 @@ u8_t com_type( un_t da )
     return 0;
 }
 
+/* get frame's number */
 u16_t com_frame( com_t *com )
 {   
     if( 0 == com )
@@ -81,7 +82,7 @@ u16_t com_frame( com_t *com )
    return com->frame;
 }
 
-/* */
+/* get cache size */
 u16_t com_size( com_t *com )
 {
     if( 0 == com )
@@ -90,6 +91,7 @@ u16_t com_size( com_t *com )
     return com->size-1;
 }
 
+/* get used space */
 u16_t com_used( com_t *com )
 {
     if( 0 == com )
@@ -98,6 +100,7 @@ u16_t com_used( com_t *com )
     return ( com->front - com->rear + com->size ) % com->size;
 }
 
+/* get idle space */
 u16_t com_space( com_t *com )
 {
     if( 0 == com )
@@ -109,6 +112,7 @@ u16_t com_space( com_t *com )
         return ( com->rear + com->size - com->front ) % com->size - 1;
 }
 
+/* decide index place whether is used */
 u8_t com_in( com_t *com, u16_t index )
 {
     if( 0 == com )

@@ -20,7 +20,7 @@ int main( void )
         out( "0 not in com \n" );
 #endif
     
-#if 1
+#if 0
     out( ">>. com start\n" );
     com_print( &com );
 
@@ -40,6 +40,8 @@ int main( void )
         ret = com_pop( &com, &da );
         if( 0 != ret )
             out( "pop error: ret = %d, i = %d\n", ret, i );
+        else
+            out( "%d pop %d\n", i, da );
     }
 
     com_print( &com );
@@ -70,9 +72,8 @@ int main( void )
 
 #endif
 
-#if 0
+#if 1
 //   printf( " LED_RUN = %d\n", LED_RUN );        // output 0
-    int i = 0;
 
 //init
     led_init( );

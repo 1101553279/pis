@@ -19,6 +19,7 @@ int main( void )
     s8_t ret= 0;
     com_t com;
     frame_t frame; 
+    frame_t query; 
     un_t buff[ 100 ]; 
     u16_t len;
     un_t store[ ] = { 
@@ -70,6 +71,11 @@ int main( void )
 
     out( "\n" );
     frame_print( &frame );
+
+    out( ">> frame query !\n" );
+    frame_query( &frame, &query );
+    frame_print( &query );
+    out( "\n" );
 
 #endif
 

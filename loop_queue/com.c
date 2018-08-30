@@ -2,11 +2,11 @@
 #include <string.h>
 #include "debug.h"
 
-#define CACHE_SIZE  31 
+#define CACHE_SIZE  11
 
 static un_t com_cache[ CACHE_SIZE ];
 
-void *com_cache_alloc( u16_t size )
+static void *com_cache_alloc( u16_t size )
 {
     return com_cache;
 }
@@ -27,7 +27,7 @@ s8_t com_init( com_t *com )
     if( 0 != cache )
     {
         com->size = CACHE_SIZE;
-        com->cache = com_cache;
+        com->cache = cache;
     }
     else
     {
@@ -39,6 +39,22 @@ s8_t com_init( com_t *com )
     return 0;
 }
 
+void com_reset( com_t *com )
+{
+    u16_t bak;
+    if( 0 == com )
+        return;
+   
+    bak = com->size; 
+    if( 0 != com->cache )
+        memset( com->cache, 0, com->size );
+    
+   com->front = 0; 
+   com->rear = 0;
+
+    return;
+}
+
 u16_t com_isempty( com_t *com )
 {
     return ( com->front == com->rear );
@@ -47,6 +63,47 @@ u16_t com_isempty( com_t *com )
 u16_t com_isfull( com_t *com )
 {
     return ( (com->front+1) % com->size ) == com->rear; 
+}
+
+/* find da */
+s32_t com_find( com_t *com, un_t da )
+{
+    u16_t i = 0;
+    u16_t len;
+    u16_t pos;
+
+    if( 0 == com || com_isempty(com) )
+        return -1;
+
+    len = com_used( com );          // get used size
+    for( i = 0; i < len; i++ )
+    {
+        pos = (com->rear+i) % com->size;
+        if( da == com->cache[ pos ] )
+            break;
+    }
+    
+    if( i == len )
+       return -1; 
+    
+    return pos;     // return da unit index
+}
+
+s8_t com_push_rear( com_t *com, un_t da )
+{
+    u16_t index;
+
+    if( 0 == com )
+        return -1;
+
+    if( com_isfull( com ) )
+        return -2;
+    
+    index = (0 == com->rear ) ?  com->size-1: --com->rear;
+    com->cache[ index ] = da;
+    com->rear = index;      // need for inde == com->size-1
+
+    return 0; 
 }
 
 s8_t com_push( com_t *com, un_t da )
@@ -155,7 +212,8 @@ void com_print( com_t *com )
             out( "- " );
 #endif
     }
-
+    
+//    out("debug! com->size = %d\n", com->size );
 #if 1    
     out( "\n" );
     for( i=0; i < com->size; i++ )

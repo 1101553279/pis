@@ -31,10 +31,13 @@ s8_t frame_put_one( frame_t *fm, un_t da )
          return -2;
 
 // for frame handle , spical handle, because data foramt: ...| tail | crc1 | crc2 |
-     if( fm->tail == da || 0 != fm->state )
+     if( (fm->head == da && 0 == fm->state) ||
+         (1 == fm->state && fm->tail == da) ||
+          2 == fm->state ||
+          3 == fm->state )
          fm->state++;
 
-     if( fm->state >= 3 )
+     if( fm->state >= 4 )
      {
          fm->state = 0;
          fm->frame++;
@@ -57,17 +60,27 @@ u16_t frame_get( frame_t *fm, un_t *buff, u16_t blen )
     com_t *com;
 
     /* para error && no frame */
-    if( 0 == fm || 0 == fm->frame || 0 == buff || 0 == blen )
+    if( 0 == fm || com_isempty( &fm->com ) || 0 == buff || 0 == blen )
        return 0;
 
     com = &fm->com; 
 
     /* ready writing */
 //    for( ret=com_pop( com, &am ); (0 == ret && fm->head != am); ret = com_pop( com, &am ) )
+
     ret = com_pop( com, &am );          //remove head's unuseful data
     while( 0 == ret && fm->head != am )
         ret = com_pop( com, &am );
+
+    if( 0 != ret )                      //pop error!
+        return 0;
     
+    if( 0 != com_find( com, fm->tail ) )    // no tail unit
+    {
+        com_push_rear( com, am );           // put return
+        return 0;
+    }
+
     *(buff + len++) = am;  
     ret = com_pop( com, &am );
     while( 0 == ret && fm->tail != am )
@@ -83,8 +96,9 @@ u16_t frame_get( frame_t *fm, un_t *buff, u16_t blen )
     
     if( len < blen )        // store tail unit
         *(buff + len++) = am;
-    
-    fm->frame--;            // decremenet one frame
+
+    if( fm->frame > 0 ) 
+        fm->frame--;            // decremenet one frame
 
     //for 2 crc checksum
     for( i = 0; i < 2; i++ )

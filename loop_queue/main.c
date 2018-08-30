@@ -25,15 +25,17 @@ int main( void )
     un_t store[ ] = { 
                     0x02,0x42,0x35,0x03,0x38,0x3a,
                     0x02,0x42,0x37,0x03,0x38,0x38,
+                    0x02,0x2,0x42,0x37,0x38,0x38,
+                    0x02,0x2,0x42,0x37,0x39,0x39,
+#if 0
                     0x02,0x41,0x36,0x03,0x38,0x39,
                     0x02,0x42,0x36,0x03,0x38,0x39,
-#if 0
                     0x02,0x41,0x31,0x30,0x30,0x30,0x30,0x30,0x30,0x30,0x30,0x30,0x33,0x32,0x03,0x30,0x30, 
                     0x02,0x41,0x32,0x03,0x38,0x3d,
                     0x02,0x41,0x38,0x30,0x30,0x30,0x30,0x03,0x30,0x30,
 #endif
                     };
-#if 1 
+#if 0 
     out( ">> frame init & put two frames \n" );
     ret = frame_init( &frame, 0x02, 0x03, 0x41, 0 );
     if( 0 != ret )
@@ -53,7 +55,7 @@ int main( void )
 //    ret = frame_frame( &frame ); 
 //    out( "frame frame = %d\n", ret );
 
-    for( i = 0; i < 1; i++ )
+    for( i = 0; i < 2; i++ )
     {
 //        len = frame_get( &frame, buff, sizeof(buff) ); 
         len = frame_match_get( &frame, buff, sizeof(buff) ); 
@@ -79,15 +81,16 @@ int main( void )
 
 #endif
 
-#if 0
+#if 1
     com_init( &com );
+#if 0
     com_push( &com, 0 );
 
     if( com_in( &com, 0 ) )
         out( "0 in com \n" );
     else
         out( "0 not in com \n" );
-    
+#endif 
     out( ">>. com start\n" );
     com_print( &com );
 
@@ -129,12 +132,45 @@ int main( void )
         out( "push error: ret = %d, i = %d\n", ret , i );
     
     com_print( &com );
-   
+ 
     out( ">>. com push 1 unit\n" );
     i++; 
     ret = com_push( &com, i );
     if( 0 != ret )
         out( "push error: ret = %d, i = %d\n", ret , i );
+    com_print( &com );
+
+    out( ">>. com pop 5 units!\n" );
+    for( i = 0; i < 5; i++ )
+    {
+        ret = com_pop( &com, &da );
+        if( 0 != ret )
+            out( "pop error: ret = %d, i = %d\n", ret, i );
+        else
+            out( "%d pop %d\n", i, da );
+    }
+   
+    com_print( &com ); 
+    out( ">>. com push rear 6 unit\n" );
+    for( i = 0; i < 6; i++ )
+    {
+        ret = com_push_rear( &com, i );
+        if( 0 != ret )
+            out( "push error: ret = %d, i = %d\n", ret , i );
+    }
+    com_print( &com );
+   
+    out( ">> com reset !\n" ); 
+    com_reset( &com );
+    com_print( &com);
+
+    out( ">> com push rear 6 unit !\n" );
+    for( i = 0; i < 6; i++ )
+    {
+        ret = com_push_rear( &com, i );
+        if( 0 != ret )
+            out( "push error: ret = %d, i = %d\n", ret , i );
+    }
     com_print( &com );
 
 #endif

@@ -2,6 +2,7 @@
 #define __DEBUG_H__
 
 #include <stdio.h>
+#include "ty.h"
 
 #define ECHO_COLOR_NONE         "\033[0;0m"
 #define ECHO_COLOR_GREEN        "\033[0;32m"

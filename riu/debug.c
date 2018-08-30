@@ -1,23 +1,23 @@
 #include "debug.h"
 #include "ty.h"
 
-void print_char( s8_t ch )
+void print_char( u8_t ch )
 {
-  printf( "%c", ch );
+  out( "%c", ch );
   
   return;
 }
 
 void print_dec( u8_t in )
 {
-  printf( "%d ", in );
+  out( "%d ", in );
   
   return;
 }
 
 void print_hex( u8_t hex )
 {
-  printf( "%#x ", hex );
+  out( "%#x ", hex );
   
   return;
 }
@@ -33,7 +33,7 @@ void debug_dump( u8_t *buff, u16_t len, void (*print)(u8_t ch ) )
   
   for( in = 0; in < len; in++ )
   {
-    out( buff[in] );
+    print( buff[in] );
   }
   
   out( "\r\n" );

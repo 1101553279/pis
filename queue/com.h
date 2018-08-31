@@ -26,6 +26,7 @@ s8_t com_push( com_t *com, un_t da );   /* push one unit */
 s8_t com_pop( com_t *com, un_t *da );   /* pop one unit */
 u16_t com_size( com_t *com );           /* queue max size */
 u16_t com_used( com_t *com );           /* queue used size */
+u16_t com_len( com_t *com, u16_t index );   // cal length accordding to index
 u16_t com_space( com_t *com );          /* queue unused size */
 u8_t com_in( com_t *com, u16_t index );
 

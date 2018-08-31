@@ -111,7 +111,7 @@ s8_t com_push_rear( com_t *com, un_t da )
 
     if( com_isfull( com ) )
     {
-        com_clear( com );      // clear data
+//        com_clear( com );      // clear data
         return -2;
     }
     
@@ -129,7 +129,7 @@ s8_t com_push( com_t *com, un_t da )
     
     if( com_isfull( com ) )
     {
-        com_clear( com );
+//        com_clear( com );
         return -2;
     }
 
@@ -164,6 +164,14 @@ u16_t com_size( com_t *com )
         return 0;
 
     return com->size-1;
+}
+
+u16_t com_len( com_t *com, u16_t index )
+{
+    if( 0 == com || !com_in( com, index ) ) 
+        return 0;
+    
+    return (( index - com->rear + com->size ) % com->size) + 1;
 }
 
 /* get used space */

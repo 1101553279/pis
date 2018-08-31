@@ -183,7 +183,31 @@ int main( void )
         else 
             out( "find %d, no find!\n", i );
     }
+    
+    out( ">> com push & pop 7 units!\n" ); 
+    for( i = 0; i < 7; i++ )
+    {
+        ret = com_push( &com, i );
+        if( 0 != ret )
+            out ( "push err: ret = %d, i = %d\n" , ret, i );
 
+        ret = com_pop( &com, &da );
+        if( 0 != ret )
+            out( "pop err: ret = %d, i = %d\n", ret, i );
+        else
+            out( "pop unit: i = %d, am = %x\n", i, da );
+    }
+    com_print( &com ); 
+
+    out( ">> com len!\n" );
+    for( i = 0; i < 8; i++ )
+    {
+        len = com_len( &com, i );
+        if( len != 0 )
+            out( "index %d, len = %d\n", i, len );
+        else
+            out( "index %d, no in range!\n", i );
+    }
 
 #endif
 

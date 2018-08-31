@@ -4,6 +4,7 @@
 
 #define CACHE_SIZE  31
 
+/* for cache alloc */
 static un_t com_cache[ CACHE_SIZE ];
 
 static void *com_cache_alloc( u16_t size )
@@ -11,6 +12,7 @@ static void *com_cache_alloc( u16_t size )
     return com_cache;
 }
 
+/*  you must call this before use other functions */
 s8_t com_init( com_t *com )
 {
     void *cache;
@@ -39,6 +41,7 @@ s8_t com_init( com_t *com )
     return 0;
 }
 
+/* com module reset: clear cache / reset rear & front */
 void com_reset( com_t *com )
 {
     if( 0 == com )
@@ -53,6 +56,7 @@ void com_reset( com_t *com )
     return;
 }
 
+/* com module: cache clear , set front & rear = 0 */
 void com_clear( com_t *com )
 {
     if( 0 == com )
@@ -67,18 +71,19 @@ void com_clear( com_t *com )
     return;
 }
 
-
+/* decide com is empty */
 u16_t com_isempty( com_t *com )
 {
     return ( com->front == com->rear );
 }
 
+/* decide com is full */
 u16_t com_isfull( com_t *com )
 {
     return ( (com->front+1) % com->size ) == com->rear; 
 }
 
-/* find da */
+/* find first da, return index */
 s32_t com_find( com_t *com, un_t da )
 {
     u16_t i = 0;
@@ -102,6 +107,7 @@ s32_t com_find( com_t *com, un_t da )
     return pos;     // return da unit index
 }
 
+/* push one unit into com cache from rear */
 s8_t com_push_rear( com_t *com, un_t da )
 {
     u16_t index;
@@ -122,6 +128,7 @@ s8_t com_push_rear( com_t *com, un_t da )
     return 0; 
 }
 
+/* push one unit into com cache from front */
 s8_t com_push( com_t *com, un_t da )
 {
     if( 0 == com )
@@ -141,6 +148,7 @@ s8_t com_push( com_t *com, un_t da )
     return 0;
 }
 
+/* pop one unit inito da from com cache  */
 s8_t com_pop( com_t *com, un_t *da )
 {
     if( 0 == com || 0 == da )
@@ -157,7 +165,7 @@ s8_t com_pop( com_t *com, un_t *da )
 }
 
 
-/* get cache size */
+/* get cache max size */
 u16_t com_size( com_t *com )
 {
     if( 0 == com )
@@ -166,6 +174,7 @@ u16_t com_size( com_t *com )
     return com->size-1;
 }
 
+/* decide the length from rear to index ( include index )*/
 u16_t com_len( com_t *com, u16_t index )
 {
     if( 0 == com || !com_in( com, index ) ) 
@@ -174,7 +183,7 @@ u16_t com_len( com_t *com, u16_t index )
     return (( index - com->rear + com->size ) % com->size) + 1;
 }
 
-/* get used space */
+/* get already used space by unit*/
 u16_t com_used( com_t *com )
 {
     if( 0 == com )
@@ -183,7 +192,7 @@ u16_t com_used( com_t *com )
     return ( com->front - com->rear + com->size ) % com->size;
 }
 
-/* get idle space */
+/* get idle space by unit */
 u16_t com_space( com_t *com )
 {
     if( 0 == com )
@@ -195,7 +204,7 @@ u16_t com_space( com_t *com )
         return ( com->rear + com->size - com->front ) % com->size - 1;
 }
 
-/* decide index place whether is used */
+/* decide index place whether is in com cache */
 u8_t com_in( com_t *com, u16_t index )
 {
     if( 0 == com )

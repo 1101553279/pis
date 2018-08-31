@@ -20,6 +20,7 @@ s8_t frame_init( frame_t *fm, un_t head, un_t tail, un_t addr, match_t match )
     return com_init( &fm->com ); 
 }
 
+/* clear frame state && clear com module */
 void frame_clear( frame_t *fm )
 {
     if( 0 == fm )
@@ -32,6 +33,7 @@ void frame_clear( frame_t *fm )
     return;
 }
 
+/* put one da into com cache && record frame state */
 s8_t frame_put_one( frame_t *fm, un_t da )
 {
     s8_t ret = 0;
@@ -129,6 +131,7 @@ u16_t frame_get( frame_t *fm, un_t *buff, u16_t blen )
     return len;
 }
 
+/* get frame from com cache according to match function */
 u16_t frame_match_get( frame_t *fm, un_t *buff, u16_t blen )
 {
     u16_t len = 0;  // frame length
@@ -188,6 +191,7 @@ s8_t frame_query( frame_t *fm, frame_t *info )
     return 0;
 }
 
+/* for debug call */
 void frame_print( frame_t *fm )
 {
     u16_t size;

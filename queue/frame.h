@@ -20,6 +20,9 @@ typedef struct frame{
 /* init frame module */
 s8_t frame_init( frame_t *fm, un_t head, un_t tail, un_t addr, match_t match );
 
+// frame clear
+void frame_clear( frame_t *fm );
+
 // put one unit data
 s8_t frame_put_one( frame_t *fm, un_t da );
 

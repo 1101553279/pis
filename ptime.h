@@ -12,6 +12,7 @@ typedef struct ptime{
     u8_t sec;
 }ptime_t;
 
+u32_t ptime_get( void );
 
 
 #endif

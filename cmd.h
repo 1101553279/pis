@@ -1,14 +1,10 @@
-#ifndef __PARSE_H__
-#define __PARSE_H__
+#ifndef __CMD_H__
+#define __CMD_H__
 
 #include "ty.h"
 #include "frame.h"
 #include "ptime.h"
 
-
-
-
-#if 0       // need compare previous && current id
 typedef struct st_start{
     ptime_t time; 
     u16_t line;
@@ -26,6 +22,15 @@ typedef struct emg_start{
     u8_t state;
 }emg_start_t;
 
+typedef struct cmd_info{
+    u8_t cmd;
+    st_start_t sta;
+    volume_t vol;
+    emg_start_t emga;
+}cmd_info_t;
+
+
+#if 0       // need compare previous && current id
 typedef struct parse_info{
     u8_t cmd;               // parse type, command type
     union{

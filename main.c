@@ -2,6 +2,7 @@
 #include "led.h"
 #include "com.h"
 #include "frame.h"
+#include "out.h"
 #include "debug.h"
 
 
@@ -23,6 +24,7 @@ int main( void )
     frame_t query; 
     un_t buff[ 100 ]; 
     u16_t len;
+    out_t outs[ 5 ];
     un_t store[ ] = { 
                     0x02,0x42,0x35,0x03,0x38,0x3a,
                     0x02,0x42,0x37,0x03,0x38,0x38,
@@ -36,7 +38,14 @@ int main( void )
                     0x02,0x41,0x38,0x30,0x30,0x30,0x30,0x03,0x30,0x30,
 #endif
                     };
-#if 1 
+   
+    for( i = 0; i < 4; i++ )
+        out_init( outs+i, i+1, MODE_SINGLE, 30+i );
+    
+    out_init( outs+i, i+1, MODE_PERIOD, 30+i );
+
+    out_print(  outs, 5);
+#if 0 
     out( ">> frame init & put two frames \n" );
     ret = frame_init( &frame, 0x02, 0x03, 0x41, 0 );
     if( 0 != ret )

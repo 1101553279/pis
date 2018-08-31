@@ -5,6 +5,10 @@
 #include "frame.h"
 #include "ptime.h"
 
+
+
+
+#if 0       // need compare previous && current id
 typedef struct st_start{
     ptime_t time; 
     u16_t line;
@@ -33,6 +37,7 @@ typedef struct parse_info{
 
 // parse one frame info
 s8_t parse_frame( un_t *buff, u16_t len, parse_t *info );  
+#endif
 
 
 #endif

@@ -21,6 +21,7 @@
  *
  * */
 
+#if 0
 /* parse buff , put result into info */
 s8_t parse_frame( un_t *buff, u16_t len, parse_t *info )
 {
@@ -29,3 +30,4 @@ s8_t parse_frame( un_t *buff, u16_t len, parse_t *info )
 
     return 0;
 }
+#endif

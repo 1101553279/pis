@@ -13,6 +13,12 @@ u8_t frame_match( un_t master, un_t slave )
     return master == slave;
 }
 
+void timeout( u8_t no, u8_t flag )
+{
+    out("timeout: no: %d, flag: %d\n", no, flag );
+    return;
+}
+
 int main( void )
 {
     int i = 0;  
@@ -38,13 +44,59 @@ int main( void )
                     0x02,0x41,0x38,0x30,0x30,0x30,0x30,0x03,0x30,0x30,
 #endif
                     };
+ 
+#if 1
+#if 1
+    out( ">> out check!\n" ); 
+    out_init( outs, 0, MODE_SINGLE, 5, timeout );
    
-    for( i = 0; i < 4; i++ )
-        out_init( outs+i, i+1, MODE_SINGLE, 30+i );
-    
-    out_init( outs+i, i+1, MODE_PERIOD, 30+i );
+    out_start( outs );
+    out_print( outs, 1 );
 
+    while( 1 )
+    {
+        out_check( outs );
+        sleep( 1 );
+
+        out_print( outs, 1 );
+    }
+
+#else
+    out( ">> out init 4 single mode, one period!\n" );
+    for( i = 0; i < 4; i++ )
+        out_init( outs+i, i+1, MODE_SINGLE, 30+i, timeout );
+    
+    out_init( outs+i, i+1, MODE_PERIOD, 30+i, timeout );
+    
     out_print(  outs, 5);
+    
+#if 0
+    out( ">> out config!\n" );
+    ret = out_config( outs+2, CON_ACTIVE, OUT_ACTIVE );
+    if( 0 != ret )
+        out( "config fail! ret = %d\n", ret );
+    ret = out_config( outs+2, CON_MODE, MODE_PERIOD );
+    ret = out_config( outs+2, CON_FLAG, FLAG_ON );
+    ret = out_config( outs+2, CON_STIME, 20 );
+    ret = out_config( outs+2, CON_TIMEOUT, 10 );
+    ret = out_config( outs+2, CON_HANDLE, led_con );
+#endif
+    out_print( outs, 5 );
+   
+    out( ">> out start!\n" );
+    out_start( outs+2 );
+
+    out_print( outs, 5 );
+
+    out( ">> out stop!\n" );
+    out_stop( outs+4 );
+
+    out_print( outs, 5 );
+#endif
+#endif
+    
+    
+
 #if 0 
     out( ">> frame init & put two frames \n" );
     ret = frame_init( &frame, 0x02, 0x03, 0x41, 0 );

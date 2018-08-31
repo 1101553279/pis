@@ -124,14 +124,18 @@ void out_check( out_t *out )
 
     if( MODE_SINGLE == out->mode )
     {
-        out->hand( out->no, !out->flag );        // execute handler
+        if( 0 != out->hand )
+            out->hand( out->no, !out->flag );        // execute handler
+
         out_stop( out );                         // one shot
     }
     else if( MODE_PERIOD == out->mode )
     {
         out->flag = ( FLAG_ON == out->flag ) ? FLAG_OFF: FLAG_ON ;
         out->stime = ptime_get();
-        out->hand( out->no, out->flag );
+
+        if( 0 != out->hand )
+            out->hand( out->no, out->flag );
     }
 
     return;

@@ -2,18 +2,21 @@
 #define __OUT_H__
 
 #include "ty.h"
+
+//for out active( enable or disable )
 enum{ 
     OUT_NOACT = 0,
     OUT_ACTIVE,
 };
 
+// for out mode
 enum{
     MODE_NONE = 0,
     MODE_SINGLE,
     MODE_PERIOD,
 };
 
-// for 
+// for out flag
 enum{
     FLAG_OFF = 0,
     FLAG_ON,
@@ -43,12 +46,22 @@ typedef struct out{
     out_timeout_t hand;   // timeout handler
 }out_t;
 
+// init out status
 void out_init( out_t *out, u8_t no, u8_t mode, u32_t timeout, out_timeout_t handle );
-s8_t out_config( out_t *out, u8_t type, u32_t data );       // for config out parameter
-void out_start( out_t *out ); 
-void out_stop( out_t *out );
-void out_check( out_t *out );           // check whether is timeout
 
+// config out module parameter
+s8_t out_config( out_t *out, u8_t type, u32_t data );       // for config out parameter
+
+// out module start work
+void out_start( out_t *out ); 
+
+// out module stop work
+void out_stop( out_t *out );
+
+// check whether is timeout
+void out_check( out_t *out );
+
+// only for test
 void out_print( out_t *outs, u8_t no );
 
 

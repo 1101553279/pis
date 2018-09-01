@@ -19,6 +19,7 @@ typedef struct top{
 
     pcmd_t rec;             // for rec's command
     out_t leds[ MAX_LED ];  // for self's leds
+                            // log ic for record log
 }top_t;
 
 s8_t top_hand( top_t *top );

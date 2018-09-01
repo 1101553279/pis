@@ -3,6 +3,8 @@
 
 #include "com.h"
 
+#define FRAME_MAX_SIZE  100
+
 /* for match function, for deciding whether is useful */
 typedef u8_t (* match_t)( un_t master, un_t slave );
 

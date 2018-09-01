@@ -49,16 +49,18 @@ int main( void )
 #if 1
     out( ">> out check!\n" ); 
     out_init( outs, 0, MODE_SINGLE, 5, timeout );
+    out_init( outs+1, 1, MODE_PERIOD, 5, timeout );
    
     out_start( outs );
-    out_print( outs, 1 );
+    out_print( outs, 2 );
 
     while( 1 )
     {
         out_check( outs );
+        out_check( outs+1 );
         sleep( 1 );
 
-        out_print( outs, 1 );
+        out_print( outs, 2 );
     }
 
 #else

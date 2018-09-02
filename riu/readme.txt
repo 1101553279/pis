@@ -17,7 +17,7 @@ rec         core        vs1003  -> riu
         occ_play    occ playing
         vs_reset    vs1003 reseting
 
-functions:
+cmd functions:
 
     1>. play station start      ok  0x31
     2>. play station stop       ok  0x32

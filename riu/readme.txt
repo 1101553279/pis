@@ -17,6 +17,21 @@ rec         core        vs1003  -> riu
         occ_play    occ playing
         vs_reset    vs1003 reseting
 
+
+cmd functions:
+
+    1>. play station start      ok  0x31
+    2>. play station stop       ok  0x32
+    3>. play emergency start
+    4>. play emgerency stop
+    5>. tiu play start
+    6>. tiu play stop
+    7>. occ play start          ok  0x36
+    8>. occ play stop           ok  0x37
+    9>. query riu status
+    10>. set riu volume size
+
+#if 0       // v1
 cmd functions:
 
     1>. play station start      ok  0x31
@@ -29,4 +44,5 @@ cmd functions:
     8>. occ play stop           ok  0x37
     9>. query riu status
     10>. set riu volume size
+#endif
 

@@ -30,6 +30,22 @@ details:
 
     step4: d ----> p   post: hang up
 
+    
+structure:
+    
+    state   1. idle         // not busy
+            2. pwait        // pecu request 
+            3. setup        // intercom setup
+            4. frozen       // intercom by other setup
+
+    rcabno
+    rdev
+    rdevno  
+    scabno  *       // link info    // for intercom get // intercom cancel
+    sdev    *
+    sdevno  *
+    channel *
+
 
 2>>. intercom between two driver
     as master:
@@ -62,3 +78,5 @@ details:
 4>>. broadcast listenning
         step1: d <---- u    post: start
         step2: d <---- u    post: stop
+
+

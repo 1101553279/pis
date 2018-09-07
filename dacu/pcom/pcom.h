@@ -28,11 +28,11 @@ typedef struct pcom{
                     //3. setup      // intercom setup
                     //4. frozen     // intercom by other setup
                     
-    pcom_callback_t pwait_call;     // callback when enter pecu wait state
-    pcom_callback_t setup_call;     // callback when enter intercom setup
-    pcom_callback_t frozen_call;    // callback when enter frozen state
+//    pcom_callback_t pwait_call;     // callback when enter pecu wait state
+//    pcom_callback_t setup_call;     // callback when enter intercom setup
+//    pcom_callback_t frozen_call;    // callback when enter frozen state
     
-    pecu_t info;    // pecu information store when intercom setup
+    pecu_t info;    // pecu information store when intercom setup || frozen
 
     struct list_head pecuq;     
 }pcom_t;

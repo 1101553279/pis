@@ -46,7 +46,7 @@ details:
     as slave:
         step1: sd <---- md  get: request
 
-                    step2: sd ----> md  post: cancel
+                    step2: sd <---- md  get: cancel
 
         step3: sd ----> md  post: respone
 
@@ -57,7 +57,8 @@ details:
 
 3>>. broadcast by driver
         step1: d ----> r    post: request
+        step2: d <---- r    get: response
 
 4>>. broadcast listenning
-        step1: u ----> d    post: start
-        step1: u ----> d    post: stop
+        step1: d <---- u    post: start
+        step2: d <---- u    post: stop

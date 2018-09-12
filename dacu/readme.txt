@@ -80,3 +80,27 @@ structure:
         step2: d <---- u    post: stop
 
 
+
+program contain:
+    event   :       device receive msg is called event
+    status  :       change to status according to event and current status
+    actions :       check status for taking actions
+
+    msg          msg
+    \  \         /  /
+     \  \       /  /
+      \  \     /  /
+     -------------------
+    |                   |       idle( default status )
+    |     device        |       status change when receiving    
+     -------------------        check status && take actions
+    
+
+
+
+
+
+
+
+
+

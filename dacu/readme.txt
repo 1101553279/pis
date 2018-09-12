@@ -79,14 +79,13 @@ structure:
         step1: d <---- u    post: start
         step2: d <---- u    post: stop
 
-
-
+*************************************************************************************
 program contain:
     event   :       device receive msg is called event
     status  :       change to status according to event and current status
     actions :       check status for taking actions
 
-    msg          msg
+    msg           msg
     \  \         /  /
      \  \       /  /
       \  \     /  /
@@ -95,6 +94,17 @@ program contain:
     |     device        |       status change when receiving    
      -------------------        check status && take actions
     
+*************************************************************************************
+event:
+    PPT / UIC / BUTTON / NETWORK
+
+status: ( status is that can keep on always )
+    idle    // idle status 
+    wait    // wait status
+    using   // set this when function established
+
+action:
+    depend on : event && status
 
 
 

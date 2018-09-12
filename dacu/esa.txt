@@ -1,0 +1,49 @@
+event:
+    network
+        pecu;
+            pcom_connect;     // send passenger request 
+            pcom_close;       // cancel request
+
+        dacu;
+            dcom_connect;    // send driver request
+            dcom_accept;     // establish com
+            dcom_close;      // hang up com
+            
+        rec;
+            uic_idle;       // rec tell dacu uic bus is idle
+            occ_start;      // rec tell dacu occ start;
+            occ_stop;       // rec tell dacu occ stop;
+
+    pca
+        button  
+            pa_in;      // pa_in button pushed
+            pa_out;     // pa_out button pushed
+            com_pd;     // pd_com button pushed
+            com_dd;     // dd_com button pushed
+        uic
+            uic56;      // uic56 input level changed
+            uic78;      // uic78 input level changed
+        ppt
+            ppt;        // ppt button pushed
+
+    timeout:
+        pa_tout;
+            in_tout;    // pa in request rec timeout
+            out_tout;   // pa out request rec timeout
+        com_tout;
+            dd_tout;    // driver to driver timeout
+        
+        ppt_tout;
+            ppt_tout;   // ppt no pushed timeout
+
+status:
+
+
+
+
+
+action:
+
+
+
+

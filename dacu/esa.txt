@@ -21,15 +21,15 @@ event:
 
         dacu;
             dcom_connect;    // send driver request
-                inter connect
-                    dacu 1...2
+//                inter connect             // use uic78
+//                    dacu 1...2
                 outer connect
                     dacu 7...8
             dcom_reply;
                 dcom_accept;     // establish com
                     dacu
-                        inter 
-                            dacu 1...2
+//                        inter             //use uic78
+//                            dacu 1...2
                         outer
                             dacu 7...8
                     pecu
@@ -39,8 +39,8 @@ event:
                             pecu 7...12
                 dcom_close;      // hang up com
                     dacu
-                        inter
-                            dacu 1...2
+//                        inter             //use uic78
+//                            dacu 1...2
                         outer
                             dacu 7...8
                     pecu

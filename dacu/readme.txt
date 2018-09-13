@@ -98,7 +98,7 @@ program contain:
 event:
     PPT / UIC / BUTTON / NETWORK
 
-status: ( status is that can keep on always )
+status: ( only one status can exist at the same time && status is that can keep on always )
     idle    // idle status 
     wait    // wait status
     using   // set this when function established

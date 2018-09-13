@@ -106,7 +106,15 @@ status: ( only one status can exist at the same time && status is that can keep 
 action:
     depend on : event && status
 
-
+=================================================================================
+seq:
+    functions
+        |
+        V 
+    esa(event/status/action)
+        |
+        V
+    struct
 
 
 

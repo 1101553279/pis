@@ -1,0 +1,251 @@
+/*  >>1. use class method       *
+    or
+    >>2. use oo thinking
+
+    notice: * indicate current use
+
+    base on function 
+*/
+
+event: is for trigger
+    network
+    pca9539
+    timeout
+status: can keep long time
+active: depend on status when event come in
+
+
+pcom( pecu, pca:button, dacu )
+    event:  
+        network: 
+            pecu:
+                connect 
+                close
+            dacu:
+                accept
+                close
+        
+        pca9539:button
+            accept
+            close
+            
+        timeout  -> none
+
+    status:
+        pidle 
+        pend_wait    
+        phost_using  
+        pother_using 
+
+
+dcom( dacu, pca:uic78, pca:button )
+    event:
+        network: 
+            dacu:
+                connect 
+                accept
+                close
+        
+        pca9539:button
+            connect
+            accept
+            close
+            
+        timeout
+            connect_timeout
+
+    status:
+
+broadcast( rec )
+    event:
+        can_cast        // from network
+        timeout         // from time check
+    status:
+
+listen( rec(occ) pc:uic56 )
+    event:
+        listen_start   // check uic56
+        listen_stop    // check uic56
+        occ_start      // from network
+        occ_stop       // from network
+    status:
+
+
+
+========follow part===== event -> status -> action =============
+
+event:
+    network
+        pecu;
+            pcom_connect;     // send passenger request     
+                inter connect   
+                    pecu 1...6      // inter train 
+                outer connect
+                    pecu 7...12     // link train pecus
+
+            pcom_close;       // cancel request
+                inter close
+                    pecu 1...6
+                outer close
+                    pecu 7...12   // link train pecus
+
+        dacu;
+            dcom_connect;    // send driver request
+                inter connect
+                    dacu 1...2
+                outer connect
+                    dacu 7...8
+            dcom_reply;
+                dcom_accept;     // establish com
+                    dacu
+                        inter 
+                            dacu 1...2
+                        outer
+                            dacu 7...8
+                    pecu
+                        inter
+                            pecu 1...6
+                        outer
+                            pecu 7...12
+                dcom_close;      // hang up com
+                    dacu
+                        inter
+                            dacu 1...2
+                        outer
+                            dacu 7...8
+                    pecu
+                        inter
+                            pecu 1...6
+                        outer
+                            pecu 7...12
+            
+        rec;
+            uic_idle;           // rec tell dacu uic bus is idle
+            occ
+                occ_start;      // rec tell dacu occ start;
+                occ_stop;       // rec tell dacu occ stop;
+
+    pca
+        button  
+            pa_in;      // pa_in button changed
+                level h
+                level l
+                    pa_in_pushed(rising)
+                    pa_in_poped(falling)
+            pa_out;     // pa_out button changed
+                level h
+                level l
+                    pa_out_pushed(rising)
+                    pa_out_poped(falling)
+            com_pd;     // pd_com button changed
+                level h
+                level l
+                    com_pd_pushed(rising)
+                    com_pd_poped(falling)
+            com_dd;     // dd_com button changed
+                level h
+                level l
+                    com_dd_pushed(rising)
+                    com_pd_poped(falling)
+        uic
+            uic56;      // uic56 input level changed
+                uic56_h
+                uic56_l
+            uic78;      // uic78 input level changed
+                uic78_h
+                uic78_l
+        ppt
+            ppt;        // ppt button changed
+                level h
+                level l
+                    ppt_pushed(rising)
+                    ppt_poped(falling)
+
+    timeout:
+        pa_tout;
+            in_tout;    // pa in request rec timeout
+            out_tout;   // pa out request rec timeout
+        com_tout;
+            dd_tout;    // driver to driver timeout
+        
+        ppt_tout;
+            ppt_tout;   // ppt no pushed timeout
+
+status:
+*    idle
+
+*    wait
+     *   pd com 
+            pd_wait (which pecu is waitting )
+                inter
+                    pecu 1...6
+                inter
+                    pecu 7...12
+
+     *   dd com  
+            dd_host_wait (current dacu call other)
+
+            dd_end_wait     // end dacu wait host(current) dacu
+                inter_wait
+                    dacu 1...2      // current train dacu
+                outer_wait
+                    dacu 7...8      // link train dacu
+                
+     *   pa in/out 
+            pa_in_wait      // public in announce wait
+            pa_out_wait     // public out announce wait
+
+     *   listen
+            bcast_wait     // broadcast && station listen wait
+            occ_wait       // occ listen wait
+
+*    using
+     *   pd com
+            pd_using            // abstract
+                host using      // current dacu accept the pd call
+                    inter
+                        pecu 1...6
+                    outer
+                        pecu 7...12
+
+                other using     // other dacu accept the pd call
+                    inter
+                        pecu 1...6
+                    outer
+                        pecu 7...12
+     *   dd com
+            dd_using            // abstract
+                inter_using     // related to current dacu(contains end -> host and host -> end)
+                    host_using  // current dacu send to call
+                    end_using   // end dacu send call to me
+
+                other_using     // unrelated to current dacu;
+                    ....... use map
+                    d1 -> d2        dacu1 -> dacu2
+                    d1 -> d3        ...
+                    d1 -> d4        ...
+                    d2 -> d1
+                    d2 -> d3
+                    d2 -> d4
+                    d3 -> d1
+                    d3 -> d2
+                    d3 -> d4
+                    d4 -> d1
+                    d4 -> d2
+                    d4 -> d3
+      *  pa in/out
+            pa_using
+                pa_in_using
+                pa_out_using
+
+      *  listen
+            listen using
+                bcast listen        // broadcast && station listen
+                occ listen          // occ broadcaste listen
+
+action:
+    
+
+
+
+

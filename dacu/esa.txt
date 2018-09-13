@@ -1,30 +1,73 @@
+/*  >>1. use class method
+    >>2. use oo thinking
+*/
 event:
     network
         pecu;
-            pcom_connect;     // send passenger request 
+            pcom_connect;     // send passenger request     
+                pecu 1...6
+                pecu 7...12   // link train pecus
             pcom_close;       // cancel request
+                pecu 1...6
+                pecu 7...12   // link train pecus
 
         dacu;
             dcom_connect;    // send driver request
-            dcom_accept;     // establish com
-            dcom_close;      // hang up com
+                dacu 1...2
+                dacu 7...8
+            dcom_reply;
+                dcom_accept;     // establish com
+                    dacu 1...2
+                    dacu 7...8
+                    pecu 1...6
+                    pecu 7...12
+                dcom_close;      // hang up com
+                    dacu 1...2
+                    dacu 7...8
+                    pecu 1...6
+                    pecu 7...12
             
         rec;
-            uic_idle;       // rec tell dacu uic bus is idle
-            occ_start;      // rec tell dacu occ start;
-            occ_stop;       // rec tell dacu occ stop;
+            uic_idle;           // rec tell dacu uic bus is idle
+            occ
+                occ_start;      // rec tell dacu occ start;
+                occ_stop;       // rec tell dacu occ stop;
 
     pca
         button  
-            pa_in;      // pa_in button pushed
-            pa_out;     // pa_out button pushed
-            com_pd;     // pd_com button pushed
-            com_dd;     // dd_com button pushed
+            pa_in;      // pa_in button changed
+                level h
+                level l
+                    pa_in_pushed(rising)
+                    pa_in_poped(falling)
+            pa_out;     // pa_out button changed
+                level h
+                level l
+                    pa_out_pushed(rising)
+                    pa_out_poped(falling)
+            com_pd;     // pd_com button changed
+                level h
+                level l
+                    com_pd_pushed(rising)
+                    com_pd_poped(falling)
+            com_dd;     // dd_com button changed
+                level h
+                level l
+                    com_dd_pushed(rising)
+                    com_pd_poped(falling)
         uic
             uic56;      // uic56 input level changed
+                uic56_h
+                uic56_l
             uic78;      // uic78 input level changed
+                uic78_h
+                uic78_l
         ppt
-            ppt;        // ppt button pushed
+            ppt;        // ppt button changed
+                level h
+                level l
+                    ppt_pushed(rising)
+                    ppt_poped(falling)
 
     timeout:
         pa_tout;

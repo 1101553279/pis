@@ -59,12 +59,44 @@ struct com{
     //...
     u8_t pbut_flag;         // pcom button level record
     u8_t dbut_flag;         // dcom button level record
+
     u8_t duic78_flag;       // dcom uic78 level record
     u8_t duic78_count;      // dcom uic78 pluse count
+    u32_t duic78_time;      // record time for check 3 times pluse during 300ms
 
-    u32_t dtime;            // dcom :for  host call timeout
+    u32_t dtimeout;         // dcom :for  host call timeout
         
     struct list_head head;  // other call me wait communication queue
+};
+
+struct pa{
+    u8_t state;
+    // in  
+                    //in_idle
+                    //in_wait
+                    //in_using
+    //out
+                    //out_idle
+                    //out_wait
+                    //out_using
+
+    u8_t inbut_flag;        // pa in button last level record
+    u8_t outbut_flag;       // pa out button last level record
+    u32_t in_timeout;       // pa in timeout record
+    u32_t out_timeout;      // pa out timeout record
+};
+
+struct listen{
+    u8_t state;
+    //broadcast
+                        // bc_idle
+                        // bc_wait
+                        // bc_using
+    //occ
+                        // occ_idle
+                        // occ_wait
+                        // occ_using
+    u8_t uic56_flag;        // record last time uic56 level
 };
 
 struct dacu{

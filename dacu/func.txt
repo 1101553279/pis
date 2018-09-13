@@ -11,7 +11,7 @@ event: is for trigger( is need for implementing the function )
     network
     pca9539
     timeout
-status: can keep long time
+status: can keep long time && (can only one status at the same time)
 active: depend on status when event come in
 
 
@@ -63,8 +63,9 @@ dcom( dacu, pca:uic78, pca:button )
        didle
        dhost_wait 
        dend_wait
-       dhost_using;    // host be accepted
-       dend_using      // end be accepted
+       dusing
+           dhost_using;    // host be accepted
+           dend_using      // end be accepted
        dother_using    // current dacu is not in using
 
 broadcast
@@ -106,10 +107,12 @@ listen( rec(occ) pc:uic56 )
             none
 
     status:
-        idle
-        listen_wait
+        broadcast_idle
+        broadcast_wait
+        broadcast_using
+
+        occ_idle
         occ_wait
-        listen_using
         occ_using
 
 

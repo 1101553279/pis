@@ -80,12 +80,54 @@ event:
             ppt_tout;   // ppt no pushed timeout
 
 status:
+    idle
 
+    wait
+        pd com 
+            pd_wait
+                pecu 1...6
+                pecu 7...12
 
+        dd com 
+            dd_host_wait
+//                dacu 1...2  // host(current) dacu wait end dacu
 
+            dd_end_wait     // end dacu wait host(current) dacu
+                dacu 1...2
+                dacu 7...8
+                
+        pa in/out 
+            pa_wait
+                pa_in_wait
+                pa_out_wait
 
+        listen
+            none 
+
+    using
+        pd com
+            pd_using            // abstract
+                host using
+                    pecu 1...6
+                    pecu 7...12
+                end using
+                    pecu 1...6
+                    pecu 7...12
+        dd com
+            dd_using
+                inter_using     // related to current dacu(contains end -> host and host -> end)
+                    host_using
+                    end_using
+                other_using     // unrelated to current dacu;
+        pa in/out
+            pa_using
+                pa_in_using
+                pa_out_using
+        listen
+            listen_using
 
 action:
+    
 
 
 

@@ -1,4 +1,114 @@
+====================== base on arch ======================
+dacu:
+    struct dacu{
+        struct event et;
+        struct status ss;
 
+        //struct action an;
+        struct list_head com;
+        struct com_info info;
+
+        struct timeout out;
+        struct chip cp;
+        struct network net;
+    };
+
+    run_steps:
+        event_read();
+            read_timeout();
+            read_chip();
+            read_network();
+
+        set status depend current status && event && action results
+            
+
+
+
+
+
+
+
+event:
+/*  return: indicate whether is successful
+ *  info  : store conten to info if event_read return success
+ */
+    s8_t event_read( struct event *info );
+    struct event{
+        u8_t type;              // according to functions
+                    // com
+                    // pa 
+                    // listen
+        struct part{
+        };
+    };
+
+
+timeout:
+
+
+pca:
+    function:
+        check whether has one pin level changed
+        set one pin output
+
+    input:
+        buttons
+        uic56
+        uic78
+        ppt
+
+    output:
+
+    struct pca9539{
+        u16_t addr;     // i2c address  for read || write
+
+#if 0
+        u16_t rlast;    // last pins level
+        u16_t rcur;     // cur pins level
+        u16_t wcur;     // write pins level
+        u16_t rd_msk;   // read mask
+        u16_t wd_msk;   // write mask
+
+        u16_t but_msk;
+        u16_t u56_msk;
+        u16_t u78_msk;
+        u16_t ppt_msk;
+#endif
+    };
+
+    struct chip{
+        struct pca9539 pca[ 3 ];
+       
+    };
+
+
+network:
+    function:
+        check whether has one datagram come in
+        send one datagram to network
+
+    input:
+        pecu
+        dacu
+        rec
+
+    struct network{
+//        struct udp *udp;        // for send
+
+        u8_t new[ 3 ];          // new message com in's flag
+
+        u8_t cache[ 3 ][ 100 ]; // for cache last message
+    };
+
+
+
+
+
+
+
+
+
+========================= old ===== function as struct part=======================
 enum even_type{
     NET_WORK,       // from network
     PCA_CHIP,       // from pca chip
@@ -144,7 +254,7 @@ struct dacu{
     struct timeout out;
 };
 
-----------------------each function : event an status -------------------------------------
+----------------------each function : event and status -------------------------------------
 pcom( pecu, pca:button, dacu )
     event:  
         network: 

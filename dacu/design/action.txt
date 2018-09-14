@@ -1,0 +1,38 @@
+
+
+
+u8_t event_read()
+    
+    switch( event_type ) 
+    {
+        case com:
+            com_hand(); 
+            break;
+
+        case broadcast:
+            cast_hand();
+            break;
+
+        case listen:
+            listen_hand();
+            break;
+
+        default:
+            break;
+    }
+
+com_hand();
+------------------------------------------------------------
+    event                 |  cur status     action      
+------------------------------------------------------------
+    connect(pecu || dacu) | none            add to list
+                          
+    accept(pecu || dacu)  | host_wait       remove from list
+                                            fill com_info
+                                            cur_status -> phost_using
+                            other_wait
+
+    close(pecu || dacu )  |
+                          |
+    pbut_popd             |
+    dbut_popd             |

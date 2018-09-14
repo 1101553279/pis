@@ -10,11 +10,11 @@
         |                       |              |               |
         |                       |              |               |
         V                       |              |               |
-     ---------------         ---------       ---------       ---------
-    |type|          |       |         |     |         |     |         |
-    - -- -  status  -       - timeout -     - pca9539 -     - network -
-    |data|          |       |         |     |         |     |         |
-     ---------------         ---------       ---------       ---------
+     ---------------         ---------       --------       ---------
+    |type|          |       |         |     |        |     |         |
+    - -- -  status  -       - timeout -     -  chip  -     - network -
+    |data|          |       |         |     |        |     |         |
+     ---------------         ---------       --------       ---------
         |                       ^               ^               ^
         |                       |               |               |
         V                       |               |               |
@@ -23,9 +23,9 @@
     -   actions     - --------------------------                |
     |               | ------------------------------------------
      ---------------
-        |
-        |
-        V
+        |   ^
+        |   |
+        V   |
      -------------------
     |                   |
     - list | cache info -
@@ -37,7 +37,7 @@ specification:
         check whether has one timeout
         add one timeout
 
-    pca9539
+    chip( pca9539 )
         check whether has one pin level changed
         set one pin output
     

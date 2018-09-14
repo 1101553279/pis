@@ -23,14 +23,18 @@ u8_t event_read()
 
 com_hand();
 ------------------------------------------------------------
-    event                 |  cur status     action      
+    event                 | gstatus         action      
 ------------------------------------------------------------
-    connect(pecu || dacu) | none            add to list
+    connect(pecu || dacu) | idle            search list: compare same
+                                            add to list
+                            using
+
                           
-    accept(pecu || dacu)  | host_wait       remove from list
+    accept(pecu || dacu)  | idle            remove from list
                                             fill com_info
-                                            cur_status -> phost_using
-                            other_wait
+                                            set com_ss && gss to using;
+                            
+                            using           closing
 
     close(pecu || dacu )  |
                           |

@@ -12,6 +12,16 @@ dacu:
         struct chip cp;
         struct network net;
     };
+    
+    struct status{
+        u8_t gss;   // global status
+                    // idle
+                    // using
+        u8_t pcom_ss;
+        u8_t dcom_ss;
+        u8_t pa_ss;
+        u8_t listen_ss;
+    };
 
     run_steps:
         event_read();

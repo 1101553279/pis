@@ -1,16 +1,17 @@
+    
+                              link two trains
+button--|        rec                   |
+        |                              |
+        |-chip   dacu          dacu    |   dacu    ....
+        |                              |
+ppt-----|        pecu ......           |
+      
 
-                            link two trains
-    rec       uic               |
-                                |
-    dacu                dacu    |   dacu    ....
-                                |
-    pecu ......                 |
-                                |
 content:
-1>>. intercom between passenger and driver
-2>>. intercom between two driver
-3>>. broadcast by driver
-4>>. broadcast listenning
+    1>>. intercom between passenger and driver
+    2>>. intercom between two driver
+    3>>. broadcast by driver
+    4>>. broadcast listenning
 
 abbre:
     p -- passenger / pecu
@@ -79,7 +80,7 @@ structure:
         step1: d <---- u    post: start
         step2: d <---- u    post: stop
 
-*************************************************************************************
+**************************************************************************
 program contain:
     event   :       device receive msg is called event
     status  :       change to status according to event and current status
@@ -94,7 +95,7 @@ program contain:
     |     device        |       status change when receiving    
      -------------------        check status && take actions
     
-*************************************************************************************
+*************************************************************************
 event:
     PPT / UIC / BUTTON / NETWORK
 
@@ -106,7 +107,7 @@ status: ( only one status can exist at the same time && status is that can keep 
 action:
     depend on : event && status
 
-=================================================================================
+=========================================================================
 seq:
     functions
         |

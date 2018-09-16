@@ -1,6 +1,4 @@
 
-
-
 u8_t event_read()
     
     switch( event_type ) 
@@ -20,6 +18,15 @@ u8_t event_read()
         default:
             break;
     }
+
+
+
+
+
+
+
+
+
 
 com_hand();
 ------------------------------------------------------------

@@ -90,11 +90,11 @@ details:
 
         *   *   *   
         |    |    |-- idle
-        |    |------- wait
+        |    |------- pre_setup
         |------------ setup
 
 4>>. listenning
-    broadcast:
+    broadcast && occ && other driver pa
 
         step1: d <---- u    post: start
         step2: d <---- u    post: stop
@@ -104,14 +104,11 @@ details:
 
         *   *   *   
         |    |    |-- idle
-        |    |------- wait      /* can not listen */
+        |    |------- wait      /* can not listen 1. broadcast: uic busy 2. occ: in com*/
         |------------ setup
-    
-    occ:
-        *   *
-        |   |-- idle
-        |------ setup
-
+   
+    * occ can interupt broadcast but can not interrupt com
+     
 **************************************************************************
 program contain:
     event   :       device receive msg is called event

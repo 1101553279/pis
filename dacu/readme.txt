@@ -31,22 +31,19 @@ details:
 
     step4: d ----> p   post: hang up
 
+    status:
     
-structure:
-    
-    state   1. idle         // not busy
-            2. pwait        // pecu request 
-            3. setup        // intercom setup
-            4. frozen       // intercom by other setup
+                                | dacu |
+       | pecu |                 | dacu |
+                                | dacu |
+                                | dacu |
 
-    rcabno
-    rdev
-    rdevno  
-    scabno  *       // link info    // for intercom get // intercom cancel
-    sdev    *
-    sdevno  *
-    channel *
-
+        *   *   *   *
+        |   |   |   |-- idle
+        |   |   |------ wait
+        |   |---------- setup
+        |-------------- frozen
+        
 
 2>>. intercom between two driver
     as master:
@@ -71,14 +68,49 @@ structure:
 
         step5: sd <---- md  get: hang up
 
+    status:                     link train
+        ----------------        |
+        |               |       |
+    | dacu | ...... | dacu | ...|.. | dacu | ...... | dacu |
+                                |
+
+        *    *   *   *   *
+        |    |   |   |   |-- idle
+        |    |   |   |------ call
+        |    |   |---------- wait    |- host setup
+        |    |-------------- setup --|
+        |------------------- frozen  |- end setup
 
 3>>. broadcast by driver
         step1: d ----> r    post: request
         step2: d <---- r    get: response
 
-4>>. broadcast listenning
+    status:
+        | dacu | ...... | rec | 
+
+        *   *   *   
+        |    |    |-- idle
+        |    |------- wait
+        |------------ setup
+
+4>>. listenning
+    broadcast:
+
         step1: d <---- u    post: start
         step2: d <---- u    post: stop
+
+    status:
+        | dacu | ...... | uic | 
+
+        *   *   *   
+        |    |    |-- idle
+        |    |------- wait      /* can not listen */
+        |------------ setup
+    
+    occ:
+        *   *
+        |   |-- idle
+        |------ setup
 
 **************************************************************************
 program contain:

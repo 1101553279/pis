@@ -32,7 +32,27 @@ listen status:
 
 
 
-         ---    idle             
+
+
+
+
+
+                                     ---    pcom
+                                    |
+                         ---    com-
+                        |           |
+                        |            ---    dcom
+         ---    idle ---  
+        |               |---    occ_listen
+        |               |           
+        |               |            ---    in
+        |               |           |
+        |               |---    pa--
+        |               |           |
+        |               |            ---    out
+        |               |
+        |                ---    broadcast_listen
+        |
         |                            ---    pcom
         |                           |
         |                ---    com -            ---    host

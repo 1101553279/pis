@@ -1,0 +1,47 @@
+
+
+
+
+
+
+         ---    idle             
+        |                            ---    pcom
+        |                           |
+        |                ---    com -            ---    host
+        |               |           |           |
+        |               |            ---    dcom-
+        |               |                       |
+        |               |                        ---    end
+         ---    wait ---               
+        |               |           
+        |                ---    occ_listen
+system --               |
+        |               |            --- in
+        |               |           | 
+        |                ----    pa- 
+        |               |           |
+        |               |            --- out
+        |               |
+        |                ----   broadcast_listen
+        |
+        |                ---    pcom
+        |               |
+         ---    frozen - 
+        |               |
+        |                ---    dcom
+        |
+        |                            --- pcom
+        |                           |
+        |                ---    com-
+        |               |           |
+        |               |            --- dcom
+        |               |
+        |               |---    occ_listen
+        |               |
+         ---    setup --             ---    in
+                        |           |
+                         ---    pa -
+                        |           | 
+                        |            ---    out
+                        |
+                         ---    broadcast_listen

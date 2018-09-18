@@ -38,7 +38,7 @@ pcom: passenger  -> driver
                 led     blink   pcom    idle        blink
                                         other       none
 
-                louder  bell    pcom---| idle       \ bell
+                louder  bell    pcom---| all idle  \ bell
                                 dcom---| lsn_setup / 
                                 pa-----| other      none
                                 listen-|
@@ -47,20 +47,23 @@ pcom: passenger  -> driver
   get: cancel   led     off     pcom:   idle        off
                                         other       none( depend on current )
 
-                louder  off     pcom---| idle       off
+                louder  off     pcom---| all idle   off
                                 dcom---| other      none
                                 pa-----|
                                 listen-|
                                         
-                                        /* before && after*/
-  post:response led     on      pcom    wait        on      (after setup)
-                                       setup/frozen blink   (after wait)
-                                                    off     (after idle)
-                                        
+  (in com)
+
+  post:response led     on      pcom    
+                                dcom
+                                pa
+
                 louder
                 uic34
             
-                                  
+  (out com)
+                                        /* before && after*/
+  post:response led     on      pcom    wait        on      (after frozen)
 
 
 

@@ -1,6 +1,34 @@
 
+pcom status:
+    *   *   *   *
+    |   |   |   |-- idle
+    |   |   |------ wait
+    |   |---------- setup
+    |-------------- frozen
+
+dcom status
+    *    *   *   *   *
+    |    |   |   |   |-- idle
+    |    |   |   |------ call
+    |    |   |---------- wait    |- host setup
+    |    |-------------- setup --|
+    |------------------- frozen  |- end setup
 
 
+broadcast status:
+    *   *   *   
+    |   |    |-- idle
+    |   |------- pre_setup
+    |----------- setup
+
+
+listen status:
+    *   *   *   
+    |   |    |-- idle
+    |   |------- wait      /* can not listen 1. broadcast: uic busy 2. occ: in com*/
+    |----------- setup
+
+----------------------------------------------------------------------------------------------------------
 
 
 

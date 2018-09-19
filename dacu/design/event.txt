@@ -1,0 +1,149 @@
+event collections:
+
+1>>. intercom between passenger and driver
+
+    procedure:
+    step1: d <---- p   get: request
+
+                    step2: d <---- p   get: cancel
+
+    step3: d ----> p   post: response
+
+    step4: d ----> p   post: hang up
+
+*** events:
+        network:
+            d <---- p   get: request
+            d <---- p/d get: hangup ( pecu and dacu hangup )
+            d <---- d   get: response
+
+        button:
+            pushed
+
+2>>. intercom between two driver
+
+    procedure:
+    as master:
+        step1: md ----> sd  post: request
+
+                    step2: md ----> sd  post: cancel
+
+        step3: md <---- sd  get: response
+
+                    step4: md <---- sd   get: hang up
+
+        step5: md ----> sd  post: hang up
+
+    as slave:
+        step1: sd <---- md  get: request
+
+                    step2: sd <---- md  get: hangup
+
+        step3: sd ----> md  post: respone
+
+                    step4: sd ----> md  post: hang up
+
+        step5: sd <---- md  get: hang up
+    
+*** events:
+        network / uic:
+            d <---- d   get: request
+            d <---- d   get: hangup ( host and end hangup )
+            d <---- d   get: response
+
+        button:
+            pushed
+        
+        timeout:
+            call timeout
+        
+3>>. occ listen
+    occ listen
+
+    procedure:
+        step1: d <---- o    post: start
+        step2: d <---- o    post: stop
+
+*** events:
+        network:
+            d <---- o   get: start
+            d <---- o   get: stop
+
+    * occ can interupt broadcast but can not interrupt com
+
+4>>. pa in / out 
+    public announces by in or out
+
+    procedure:
+        step1: d ----> r    post: request
+        step2: d <---- r    get: response
+
+*** events:
+        network:
+            d <---- r   get: response   ( tell uic idle )
+
+        button:
+            pa_in pushed
+            pa_out pushed
+
+        timeout
+            request timeout ( pa in/out )
+
+
+5>>. broadcast listenning
+    broadcast && other driver pa
+   
+    procedure: 
+        step1: d <---- u    post: start
+        step2: d <---- u    post: stop
+
+*** events:
+        network:
+            d <---- u   get: start
+            d <---- u   get: stop
+
+*new adding
+6>>. louder object
+
+    events:          
+        broadcast_lsn
+        spking       
+        occ_lsn      
+        com_tip      
+        com_ing      
+        close
+
+louder status:
+    *   *   *   *   *   *   status              prior
+    |   |   |   |   |   |-- idle                0
+    |   |   |   |   |------ broadcast_lsning    1
+    |   |   |   |---------- spking              2
+    |   |   |-------------- occ_lsning          3
+    |   |------------------ com_tiping          4
+    |---------------------- coming              5
+
+    event           prior
+    broadcast_lsn   1
+    spking          2
+    occ_lsn         3               <-------|
+    com_tip         4                       |
+    com_ing         5                       |
+    close           6                       |
+                                            |
+    event_status = status_get( event );------
+    if( event_status > cur_status )        // event prior > cur louder status prior
+    {
+        execute louder action;
+
+        cur_status = event_status % 6;
+            or 
+        cur_status = ( event_status == closing )? idle: event_status;
+            or
+/*
+        if( event_status == closing )
+            cur_status = idle;
+        else
+            cur_status = event_status;
+*/
+    }
+

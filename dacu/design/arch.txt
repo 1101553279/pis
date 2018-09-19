@@ -1,7 +1,21 @@
+  
+                        system                                    | requirement
+                                                                  |
+                    | core control |                              |
+                                                                  |
+    | dcom |    | dcom |    | occ |    | pa |    | listen |       | functions
+                                                                  |
+                                                                  |
+    | network | | chip |    | timeout |                           | modules
+                                                                  |
+                | chip output |     | chip input |                | sub modules
+                                                                  |
+    | louder |  | led | | uic out | | uic in | | button | | ppt | | sub sub modules
 
-
-
-
+   
+   
+=====================================================================================
+    
      -------
     |       | <------------------------------------------------
     - event - <--------------------------------                |  

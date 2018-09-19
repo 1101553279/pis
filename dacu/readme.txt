@@ -95,7 +95,11 @@ details:
 
 4>>. listenning
     broadcast && occ && other driver pa
-
+    occ:
+        step1: d <---- o    post: start
+        step2: d <---- o    post: stop
+    
+    broadcast && other driver pa:
         step1: d <---- u    post: start
         step2: d <---- u    post: stop
 

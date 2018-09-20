@@ -29,7 +29,7 @@ listen status:
     |----------- setup
 
 *new adding:
-
+louder status:
     *   *   *   *   *   *   status              prior
     |   |   |   |   |   |-- idle                0
     |   |   |   |   |------ broadcast_lsning    1
@@ -37,6 +37,15 @@ listen status:
     |   |   |-------------- occ_lsning          3
     |   |------------------ com_tiping          4
     |---------------------- coming              5
+
+
+led status:
+    *   *   *   status      prior
+    |   |   |-- off         0
+    |   |------ blink       1
+    |---------- on          2
+
+
 
 ----------------------------------------------------------------------------------------------------------
                                      ---    pcom

@@ -123,8 +123,9 @@ louder status:
     |---------------------- coming              5
 
     event           prior
+-------------------------------
     broadcast_lsn   1
-    spking          2
+    spk             3
     occ_lsn         3               <-------|
     com_tip         4                       |
     com_ing         5                       |
@@ -147,3 +148,16 @@ louder status:
 */
     }
 
+led event:
+
+    led status:
+    *   *   *   status      prior
+    |   |   |-- off         0
+    |   |------ blink       1
+    |---------- on          2
+    
+    event:      prior
+----------------------
+    blink       1
+    turn_on     2
+    close       3

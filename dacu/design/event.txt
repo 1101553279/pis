@@ -61,13 +61,13 @@ event collections:
     occ listen
 
     procedure:
-        step1: d <---- o    post: start
-        step2: d <---- o    post: stop
+        step1: d <---- r    post: start
+        step2: d <---- r    post: stop
 
 *** events:
         network:
-            d <---- o   get: start
-            d <---- o   get: stop
+            d <---- r   get: start
+            d <---- r   get: stop
 
     * occ can interupt broadcast but can not interrupt com
 

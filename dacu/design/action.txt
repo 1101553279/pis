@@ -7,37 +7,37 @@ chead--->   |   | ----> |   | ----> |   | .......->null;
              ---         ---         ---
 
 pcom:
-    d <---- p   get:request
+*   d <---- p   get:request
         step1: check / fill information && add (pecu request) to comlist
         step2: led_con( pcom_led, LE_BLINK );  
         step3: loud_con( loud, UT_COM, UE_TIP );   
                                         // ut_pcom  -> loud type 
                                         // ue_tip -> loud event tip
-    d <---- p   get: hangup
+*   d <---- p   get: hangup
         step1: query   && remove from comlist
         step2: led_con( pcom_led, LE_BK_OFF );
         step3: loud_con( loud, UT_COM, UE_TIP_CLOSE );
                                         // LE_BK_OFF ->  stop led blink
                                         // UE_TIIP_CLOSE -> close ue_tip
-    d <---- d:  get: response
+*   d <---- d:  get: response
         step1: query && remove from comlist && put into setup
                     setup.status = frozen
         setp2: led_con( pcom_led, LE_ON );      
         setp3: loud_con( loud, UT_COM, UE_FROZEN );  
                                         // LE_ON -> set led always on
                                         // UE_FROZEN -> close ue_tip
-    d <---- d   get: hangup
+*   d <---- d   get: hangup
         step1: set setup->status
                     setup.status = idle
         step2: led_con( pcom_led, LE_ON_OFF );    
                                         //LE_ON_OFF ->  set led off
 
     button pushed
-        get com:
+*       get com:
             step1: query && remove from comlist && put into setup
                         setup.status = setup
 
-            step2: send into com notification to deevice group by network
+            step2: send into com notification to device group by network
                         control uic to tell intocom
 
             step3: led_con( pcom_led, LE_ON );  
@@ -47,7 +47,7 @@ pcom:
                                         // UE_COM -> set ue_com
                                         // PE_OPEN -> set ppt using
        ------------------------------------------------------------------
-        put com:
+*       put com:
             step1: send hangup  notification to device group by network
             step2: set setup->status 
                         setup.status = idle
@@ -58,21 +58,21 @@ pcom:
 
 dcom:
   master:
-    button pushed ( com call )
+*   button pushed ( com call )
         step1: check status && fill info && add to comlist
-               send into com notification to deevice group by network
+               send into com notification to device group by network
                control uic to tell call com
 
         step2: led_con( dcom_led, LE_BLINK ); 
 
-    button pushed ( hangup ( call cancel ) )
+*   button pushed ( hangup ( call cancel ) )
         step1: query && remove from comlist
-               send into com notification to deevice group by network
+               send into com notification to device group by network
                control uic to tell hangup com
 
         step2: led_con( dcom_led, LE_BLINK_OFF ); 
 
-    d <---- d   get:response
+*   d <---- d   get:response
         step1: query && remove from comlist
                 set status = setup
             or 
@@ -88,7 +88,7 @@ dcom:
     or 
         step4: none
         
-    button pushed ( hangup( put com ) )
+*   button pushed ( hangup( put com ) )
         step1: check status
                send hangup  notification to device group by network
                control uic to tell hangup
@@ -98,7 +98,7 @@ dcom:
         step3: loud_con( loud, UT_COM, UE_CLOSE );
         step4: ppt_con( ppt, PT_COM, PE_CLOSE );
 
-    d <---- d   get: hangup
+*   d <---- d   get: hangup
         step1: check 
                 status: setup -> idle
              or
@@ -109,21 +109,21 @@ dcom:
 
 
   slave:
-    d <---- d   get:request
+*   d <---- d   get:request
         step1: check && fill information 
                add (dacu request) to comlist
 
         step2: led_con( dcom_led, LE_BLINK ); 
         step3: loud_con( loud, UT_COM, UE_TIP );
 
-    d <---- d   get: hangup ( request cancel )
+*   d <---- d   get: hangup ( request cancel )
         step1: query && remove from comlist
         step2: led_con( dcom_led, LE_BK_OFF ); 
         step3: loud_con( loud, UT_COM, UE_TIP_CLOSE );
 
-    button pushed ( get com: setup )
+*   button pushed ( get com: setup )
         step1: query && remove from comlist
-                send into com notification to deevice group by network
+                send into com notification to device group by network
                 control uic to tell get com
                 status idle -> setup
 
@@ -131,7 +131,7 @@ dcom:
         step3: loud_con( loud, UT_COM, UE_COM );
         step4: ppt_con( ppt, PT_COM, PE_OPEN );
     
-    d <---- d   get:response
+*   d <---- d   get:response
         step1: query && remove from comlist
                 set status = setup
             or 
@@ -147,7 +147,7 @@ dcom:
     or 
         step4: none
 
-    d <---- d   get: hangup( end hangup )
+*   d <---- d   get: hangup( end hangup )
         step1: check
                 status setup -> idle
             or
@@ -160,13 +160,61 @@ dcom:
     or
         setp4: none
 
-    button pushed ( put com: hangup )
+*   button pushed ( put com: hangup )
         step1: query && remove from comlist && put into s
-                send into com notification to deevice group by network
+                send into com notification to device group by network
                 control uic to tell intocom
                 status setup -> idle
 
         step2: led_con( dcom_led, LE_ON_OFF ); 
         step3: loud_con( loud, UT_COM, UE_CLOSE );
         step4: ppt_con( ppt, PT_COM, PE_CLOSE );
+
+occ listen:
+*   d <---- r   get: start
+        step1: loud_con( loud, UT_OLSN, UE_LSN );
+
+*   d <---- r   get: stop
+        step1: loud_con( loud, UT_OLSN, UE_CLOSE );
+
+pa in/out:
+*   button pushed ( pa start )
+        step1: check status
+                send pcubox by network
+                set uic56 high
+                status idle -> pre_setup
+
+        step2: led_con( pain_led, LE_ON ); 
+    or
+        step2: led_con( paout_led, LE_ON ); 
+    
+*   d <---- r   get: uic idle   or timeout
+        step1: status pre_setup -> setup
+        step2: loud_con( loud, UT_PA, UE_PA );
+        step3: ppt_con( ppt, PT_PA, PE_OPEN );
+
+    
+*   button pushed ( pa stop )
+        step1: check status
+                send pcubox by network
+                set uic56 low
+
+                status setup -> idle
+            or
+                setatus pre_setup -> idle
+                stop timeout
+
+        step2: led_con( pain_led, LE_OFF ); 
+    or
+        step2: led_con( paout_led, LE_OFF ); 
+
+        step3: loud_con( loud, UT_PA, UE_CLOSE );
+        step4: ppt_con( ppt, PT_PA, PE_CLOSE );
+    
+broadcast listen:
+*   d <---- o   get: start
+        step1: loud_con( loud, UT_BLSN, UE_LSN );
+
+*   d <---- o   get: stop
+        step1: loud_con( loud, UT_BLSN, UE_CLOSE );
 

@@ -1,0 +1,12 @@
+
+1>>. led blink              *
+2>>. timeout check
+3>>. event handle
+4>>. pca9539 chip driver
+5>>. output all actions by event            *
+
+
+
+
+add:
+    thinking        led /louder ppt/ abstract principles

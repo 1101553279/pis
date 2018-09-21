@@ -80,13 +80,12 @@ enum loud_status{
 };
 
 enum loud_op{
-    UE_BLSN,        // broadcast listening
     UE_PA,          // pa_in / pa_out
     UE_TIP,         // communication tiping
-    UE_OLSN,        // occ listening
+    UE_LSN,         // broadcast or occ listening
     UE_COM,         // in commnunication 
     UE_FROZEN,      // other in communication, frozen close
-    UE_CLOSE,       // com close
+    UE_CLOSE,       // com or olsn or pa or bsln close
     UE_TIP_CLOSE,   // tip close
 };
   

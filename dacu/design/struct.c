@@ -39,6 +39,17 @@ enum ppt_type{
 };
 
 struct ppt{
+//    struct ppt_cnt{
+        u8_t com:2;
+        u8_t pa:2;
+//    }status;
+};
+
+u8_t ppt_con( struct ppt *ppt, u8_t type, u8_t op );
+
+//--------------------- old method --------------------------
+/*
+struct ppt{
     u8_t status;
     u8_t que;
 };
@@ -48,7 +59,7 @@ type        op
 com         open / close
 pa          open / close
 
-ppt_con( type, op );
+ppt_con( struct ppt *ppt, type, op );
 
 u8_t que;
       2   1
@@ -56,14 +67,14 @@ u8_t que;
       |   |-- com
       |------ pa
 
-
+*/
 ====== loud module =============================================================
 enum loud_status{
     US_IDLE,
     US_BLSNING,
     US_PAING,
-    US_OLSNING,     // occ listen
     US_TIPING,      // com tiping
+    US_OLSNING,     // occ listen
     US_COMING,      // communication 
     US_FROZEN,      // other in communication
 };
@@ -71,46 +82,65 @@ enum loud_status{
 enum loud_op{
     UE_BLSN,        // broadcast listening
     UE_PA,          // pa_in / pa_out
-    UE_OLSN,        // occ listening
     UE_TIP,         // communication tiping
+    UE_OLSN,        // occ listening
     UE_COM,         // in commnunication 
-    UE_FROZEN,      // other in communication
-    UE_CLOSE,       // close
+    UE_FROZEN,      // other in communication, frozen close
+    UE_CLOSE,       // com close
+    UE_TIP_CLOSE,   // tip close
 };
-
+  
 enum loud_type{
     UT_COM,
-    UT_LSN,
+    UT_OLSN,
     UT_PA,
     UT_BLSN,
 };
-
+  
 struct loud{
-    u8_t status;    // current status
-    u32_t que;      // led queue, for that receive close event when having wait to blink
+//    struct loud_cnt{
+        u32_t frozen:1;
+        u32_t com:1;
+        u32_t olisten:1;        // occ listen
+        u32_t com_tip:13;
+        u32_t pa:2;
+        u32_t blisten:2;        // broadcast listen
+//    }status;
 };
 
 
-type        op
------------------
-pcom        tip / com / frozen / close
-dcom        tip / com / frozen / close
-olsn        lsn / close
-pa          pa  / close
-blsn        lsn / close
+u8_t loud_con( struct loud *loud, u8_t type, u8_t op );
 
-loud_con( type, no,  op );
+//----------------------- old method ------------------------
+/*
+type    no        op
+-----------------------
+com     0...12    tip 
+        0...12    com 
+        0...12    frozen 
+        0...12    close
 
-u32_t que;             // pecu tip                  //dacu
+olsn    0         lsn 
+        0         close
+
+pa      0         pa    
+        0         close
+
+blsn    0         lsn   
+        0         close
+
+loud_con( struct loud *loud, type, no,  op );
+
+u32_t que;             // pecu tip             //dacu
  1     1     1     12 11 10  9 8 7 6 5 4 3 2 1 | 1 |  1  |  1  | 1
  *  |  *   |  *   | *  *  *  * * * * * * * * * | * |  *  |  *  | * 
-       |      |     ---------------------------  |    |     |    |-- frozen
-       |      |               |                  |    |     |------- com
-       |      |               |                  |    |------------- occ listen
-       |      |               |                  |------------------ dcom tip
-       |      |               |------------------------------------- pcom tip
+       |      |     -------------------------------   |     |    |-- frozen
+       |      |               |                       |     |------- com
+       |      |               |                       |------------- occ listen
+       |      |               |------------------------------------- com tip
        |      |----------------------------------------------------- pa
        |------------------------------------------------------------ broadcast listen
+*/
 
 ====== led module =============================================================
 enum led_status{
@@ -119,49 +149,87 @@ enum led_status{
     LS_ON;
 };
 
-enum led_op{
-    LE_BLINK,   // blink led
-    LE_ON,      // turn on led
-    LE_CLOSE,   // close led
-};
-
+// led group index
 enum led_type{
-    LT_PCOM,
+    LT_PCOM = 0,
     LT_DCOM,
-    LT_PAIN
+    LT_PAIN,
     LT_PAOUT,
 };
 
+enum led_op{
+    LE_BLINK,   // add blink led
+    LE_ON,      // add on led
+    LE_BK_OFF,  // remove blink led
+    LE_ON_OFF,  // remove on led
+};
+
+typedef void ( *led_cb_t )( u8_t ledno, u8_t hl );
+
 struct led{
-    u8_t type;          // pcom / dcom / pa_in / pa_out
-    u8_t status;        // current status: off / blink / on
-    u32_t que;          // led queue, for that receive close event when having wait to blink
+    u8_t type;      // pcom / dcom / pa_in / pa_out
+    struct led_cnt{
+        u8_t on:2;
+        u8_t blink:5;
+        u8_t off:1;
+    }status;
+
+    u8_t hl;        // current level for blink
+    u32_t stime;    // start time   for blink
+    u32_t timeout;  // period for blink
+
+    led_cb_t cb;    // led timeout callback for blink status
 };
 
 struct led group[ 4 ];
 
-type        no          op
---------------------------------
-pcom    1 ..... 12      off / blink / on
-dcom    1 ..... 4       off / blink / on
-pa_in       1           off / on 
-pa_out      1           off / on
+pcom:
+event               cur_status      next_status     op          should_led
+d <- p: request     idle            wait            blink       blink   
+                    wait            wait            blink       blink
+                    setup           setup           blink       on
+                    frozen          frozen          blink       on
+                    ------          ------
+d <- p: hangup      wait            idle            bk_off      off
+                                    wait            bk_off      blink
+                                    ------
+                    setup           setup           bk_off      on
+                    frozen          frozen          bk_off      on
+                    ------          ------
+d <- d: response    wait            frozen          on          on
+                    ------          ------
+d <- d: hangup      frozen          idle            on_off      off
+                                    wait            on_off      blink
+                    ------          ------
+pushed: get         wait            setup           on          blink
+                                    ------
+pushed: put         setup           idle            on_off      off
+                                    wait            on_off      blink
 
-led_con( type, no, op );
+/*      op: on     ->     blink--; on++
+ *          blink  ->     blink++;
+ *          bk_off ->     blink--
+ *          on_off ->     on--;
+ */
+void led_con( struct led *led, u8_t op );       // op one led
+
+// for led blink 
+void led_check( struct led *group, u8_t nu );   // literate all leds
 
 
 
+//----------------------------- old method ----------------------------------------
+/*              old method
 u32_t pled;             // passenger com led
-   1    12 11 10 9 8 7 6 5 4 3 2 1    1
-   *  | *  *  *  * * * * * * * * * |  * 
-        --------------------------    |-- pecu com
-                    |-------------------- pecu blink
-
+   1    12 11 10 9 8 7 6 5 4 3 2 1      1
+   *  | *  *  *  * * * * * * * * *   |  * 
+        ----------------------------    |-- pecu com
+                    |----------------------  pecu blink
 
 u32_t dled;             // driver com led
    1     1    1
    *  |  *  | *   
-         |    |-- dacu com
+         |    |---- dacu com
          |--------- dacu blink
 
 u32_t piled;            // pa in led
@@ -175,3 +243,4 @@ u32_t poled;            // pa out led
    1    1
    *  | *
         |-- pa out on 
+*/

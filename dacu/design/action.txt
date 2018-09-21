@@ -8,70 +8,113 @@ chead--->   |   | ----> |   | ----> |   | .......->null;
 
 pcom:
     d <---- p   get:request
-        step1: fill information && add (pecu request) to comlist
-        step2: led_con( lt_pcom, pno, le_blink );  
-                                                // lt_pcom -> led type: passenger communication
-                                                // pno, pecu number | which pecu request
-                                                // le_blink -> led event blink
-        step3: loud_con( ut_pcom, pno, ue_tip  );   
-                                                // ut_pcom  -> loud type 
-                                                // pno: pecu number
-                                                // ue_tip -> loud event tip
-
+        step1: check / fill information && add (pecu request) to comlist
+        step2: led_con( pcom_led, LE_BLINK );  
+        step3: loud_con( loud, UT_COM, UE_TIP );   
+                                        // ut_pcom  -> loud type 
+                                        // ue_tip -> loud event tip
     d <---- p   get: hangup
-        step1: remove from comlist
-        step2: led_con( lt_pcom, pno, le_close );  // stop led blink
-        step3: loud_con( ut_pcom, pno, ue_close ); // close ue_tip
-
+        step1: query   && remove from comlist
+        step2: led_con( pcom_led, LE_BK_OFF );
+        step3: loud_con( loud, UT_COM, UE_TIP_CLOSE );
+                                        // LE_BK_OFF ->  stop led blink
+                                        // UE_TIIP_CLOSE -> close ue_tip
     d <---- d:  get: response
-        step1: remove from comlist && put into setup
+        step1: query && remove from comlist && put into setup
                     setup.status = frozen
-        setp2: led_con( lt_pcom, pno, le_on );      // set led always on
-        setp3: loud_con( ut_pcom, pno, ue_close );  // close ue_tip
-
+        setp2: led_con( pcom_led, LE_ON );      
+        setp3: loud_con( loud, UT_COM, UE_FROZEN );  
+                                        // LE_ON -> set led always on
+                                        // UE_FROZEN -> close ue_tip
     d <---- d   get: hangup
         step1: set setup->status
                     setup.status = idle
-        step2: led_con( lt_pcom, 0, led_close );    // set led off
+        step2: led_con( pcom_led, LE_ON_OFF );    
+                                        //LE_ON_OFF ->  set led off
 
-    button pushed( into com && outo com )
-        into com:
-            step1: send into com notification to deevice group by network
-                        control uic to tell intocom
-            step2: remove from comlist && put into setup
+    button pushed
+        get com:
+            step1: query && remove from comlist && put into setup
                         setup.status = setup
-            step3: led_con( lt_pcom, pno, led_on );  // set led always on
-            step4: loud_con( ut_pcom, pno, ue_com ); // set ue_com
-            step5: ppt_con( pt_com, pe_open );       // set ppt using
+
+            step2: send into com notification to deevice group by network
+                        control uic to tell intocom
+
+            step3: led_con( pcom_led, LE_ON );  
+            step4: loud_con( loud, UT_COM, UE_COM ); 
+            step5: ppt_con( ppt, PT_COM,PE_OPEN );       
+                                        // LE_ON -> set led always on
+                                        // UE_COM -> set ue_com
+                                        // PE_OPEN -> set ppt using
        ------------------------------------------------------------------
-        outo com:
+        put com:
             step1: send hangup  notification to device group by network
                         control uic to tell hangup
             step2: set setup->status 
                         setup.status = idle
-            step3: led_con( lt_pcom, 0, led_close );    // set led off
-            step4: loud_con( ut_pcom, pno, ue_close );  // set loud close
-            step5: ppt_con( pt_com, pe_close );         // set ppt close
+            step3: led_con( pcom_led, LE_ON_OFF ); 
+            step4: loud_con( loud, UT_COM, UE_CLOSE );
+            step5: ppt_con( ppt, PE_CLOSE );
+
+
 
 
 dcom:
+    slave:
     d <---- d   get:request
-        step1: fill information && add (dacu request) to comlist
-        step2: led_con( lt_dcom, 0, le_blink );  
-                                                // lt_dcom -> led type: driver communication
-                                                // le_blink -> led event blink
-        step3: loud_con( ut_dcom, pno, ue_tip  );   
-                                                // ut_pcom  -> loud type 
-                                                // ue_tip -> loud event tip
+        step1: check && fill information && add (dacu request) to comlist
+        step2: led_con( dcom_led, LE_BLINK ); 
+        step3: loud_con( loud, UT_COM, UE_TIP );
 
-    d <---- p   get: hangup
-        step1: remove from comlist
-        step2: led_con( lt_pcom, pno, le_close );  // stop led blink
-        step3: loud_con( ut_pcom, ue_close );       // close ue_tip
+    d <---- d   get: hangup ( request cancel )
+        step1: query && remove from comlist
+        step2: led_con( dcom_led, LE_BK_OFF ); 
+        step3: loud_con( loud, UT_COM, UE_TIP_CLOSE );
 
-    d <---- d:  get: response
-        step1: remove from comlist && put into setup
-                    setup.status = frozen
+    button pushed
+    get com: setup
+        step1: query && remove from comlist && put into setup
+                send into com notification to deevice group by network
+                control uic to tell intocom
+                setup.status = setup
+        step2: led_con( dcom_led, LE_ON ); 
+        step3: loud_con( loud, UT_COM, UE_COM );
+        step4: ppt_con( ppt, PE_OPEN );
+
+    button pushed
+    put com: hangup
+        step1: query && remove from comlist && put into s
+                send into com notification to deevice group by network
+                control uic to tell intocom
+                setup.status = setup
+        step2: led_con( dcom_led, LE_ON ); 
+        step3: loud_con( loud, UT_COM, UE_COM );
+        step4: ppt_con( ppt, PE_CLOSE );
+
+    button pushed
+    get com: call
+        step1: query && remove from comlist && put into s
+                send into com notification to deevice group by network
+                control uic to tell intocom
+                setup.status = setup
+        step2: led_con( dcom_led, LE_ON ); 
+        step3: loud_con( loud, UT_COM, UE_COM );
+        step4: ppt_con( ppt, PE_CLOSE );
+    
+    button pushed
+    put com: cancel
+        step1: query && remove from comlist && put into s
+                send into com notification to deevice group by network
+                control uic to tell intocom
+                setup.status = setup
+        step2: led_con( dcom_led, LE_ON ); 
+        step3: loud_con( loud, UT_COM, UE_COM );
+        step4: ppt_con( ppt, PE_CLOSE );
+
+       ------------------------------------------------------------------
+    d <---- d:  get: response( setup )
+        step1: query && remove from comlist && put into setup
+                    setup.status = setup
         setp2: led_con( lt_pcom, pno, le_on );      // set led always on
         setp3: loud_con( ut_pcom, ue_close );       // close ue_tip
 
@@ -80,16 +123,6 @@ dcom:
                     setup.status = idle
         step2: led_con( lt_pcom, 0, led_close );    // set led off
 
-    button pushed( into com && outo com )
-        into com:
-            step1: send into com notification to deevice group by network
-                        control uic to tell intocom
-            step2: remove from comlist && put into setup
-                        setup.status = setup
-            step3: led_con( lt_pcom, pno, led_on );     // set led always on
-            step4: loud_con( ut_pcom, ue_com );         // set ue_com
-            step5: ppt_con( pt_com, pe_open );          // set ppt using
-       ------------------------------------------------------------------
         outo com:
             step1: send outocom notification to device group by network
                         control uic to tell outocom

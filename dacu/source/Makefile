@@ -1,6 +1,6 @@
 # Source, Executable, Includes, Library Defines
 INCL   = 
-SRC    = main.c pcom.c debug.c
+SRC    = main.c com.c led.c debug.c ptime.c loud.c
 OBJ    = $(SRC:.c=.o)
 LIBS   = 
 EXE    = a.out

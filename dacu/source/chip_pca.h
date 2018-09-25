@@ -31,17 +31,6 @@ enum pca_id_out{
     MAX_PCA_ID_OUT,
 };
 
-typedef struct chip_pca{
-    u8_t rflag;     // new input flag
-    u8_t addr;      // i2c address
-    u16_t rmask;    // read mask
-    u16_t wmask;    // write mask
-    u16_t old;      // for read old store
-    u16_t cur;      // current value
-    u16_t new;      // for write new store
-    char *spec;
-}chip_pca_t;
-
 typedef struct chip_com{
     u8_t type;      // out or check
                     // in or check

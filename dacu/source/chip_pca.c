@@ -99,6 +99,18 @@ no  which       event           op
 #define I_10_PPT    0x0010      // ppt
 
 #define MAX_PCA 3
+
+typedef struct chip_pca{
+    u8_t rflag;     // new input flag
+    u8_t addr;      // i2c address
+    u16_t rmask;    // read mask
+    u16_t wmask;    // write mask
+    u16_t old;      // for read old store
+    u16_t cur;      // current value
+    u16_t new;      // for write new store
+    char *spec;
+}chip_pca_t;
+
 static struct chip_pca all_pca[ MAX_PCA ] = { 0 };
 
 void pca_init( )
@@ -131,6 +143,8 @@ no    rflag addr  rmask      wmask      old   cur   new   spec
 */
     return;
 }
+
+
 
 
 

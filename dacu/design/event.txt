@@ -161,3 +161,92 @@ led event:
     blink       1
     turn_on     2
     close       3
+
+
+chip_pca event:
+// pca9539, 00, mask                             
+// output: uic78, uic56, loud, volume, mic       
+// input: uic78, uic56, diag_uic78, diag_uic56   
+
+mask: 0x0FFF
+output:
+    spe         pins        mask    level   list
+    mic         12,4        0x0808   h/l    open mic / close mic
+    loud        1,2,3,5,11  0x0417          for com / pa 
+    uic78       9,10        0x0300   h/l    for driver com
+    uic56       8           0x0080   h/l    for send pa
+    volume      6,7         0x0060   h/l    change volume size
+
+mask: 0xF000
+input:
+    spe         pins        mask    level   list
+    diag_uic78  16          0x8000          for driver com   uic78 error
+    diag_uic56  15          0x4000          for listen       uic78 error
+    uic78       14          0x2000          for driver com
+    uic56       13          0x1000          for listen
+
+
+                                                 
+// pca9539, 01, mask                             
+// output: none                                  
+// input: ip                                     
+output:
+    none
+
+mask: 0x00FF
+input:
+    spe         pins        mask    level   list
+    ip          1 ~ 8       0x00FF          read ip
+                                                 
+// pca9539, 10, mask                             
+// output: led                                   
+// input: button, ppt                            
+
+mask: 0x0F00
+output:
+    spe         pins        mask    level   list
+    led         9 ~ 12      0x0F00          control leds
+
+mask: 0x001F
+input:
+    spe         pins        mask    level   list
+    button      1 ~ 4       0x000F          read button pushed
+    ppt         5           0x0010          read ppt    puhsed
+
+summary:
+no  which       event           op
+1   all         interrupt
+                                step1: read all pca9539
+                                step2: lieterate all pca9539
+                                       find one input event  && fill info
+    pca_00 output
+2               mic
+
+3               loud
+
+4               uic78
+
+5               uic56
+
+6               volume
+
+    pca_01
+
+    pca_10 output
+7               led
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

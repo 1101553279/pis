@@ -2,6 +2,7 @@
 #include "led.h"
 #include "loud.h"
 #include "debug.h"
+#include "chip_pca.h"
 
 
 void led_callback( u8_t ledno, u8_t hl )
@@ -20,6 +21,11 @@ int main( void )
     struct led e;
     struct loud u;
     
+    pca_init( );
+
+    dump_pca();
+    
+#if 0
     loud_init( &u );
     
     loud_con( &u, UT_COM, UE_TIP );
@@ -36,11 +42,9 @@ int main( void )
 //    loud_con( &u, UT_PA, UE_CLOSE );
 
     loud_con( &u, UT_BLSN, UE_LSN );
-#if 0
     loud_con( &u, UT_BLSN, UE_CLOSE );
-#endif    
     dump_loud( &u );
-
+#endif    
 
 #if 0    
     led_init( &e, LN_PCOM, led_callback, 10 );

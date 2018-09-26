@@ -1,73 +1,13 @@
 #include "chip_pca.h"
 #include "debug.h"
 
-/*
-no  which       event           op
-1   all         interrupt
-                                step1: read all pca9539
-                                step2: lieterate all pca9539
-                                       find one input event  && fill info
-                diag_uic78
-                                h
-                                l
-                diag_uic56
-                                h
-                                l
-                uic78
-                                h
-                                l
-                uic56
-                                h
-                                l
-                ip
-                                value(0 ~ 255)
-                button
-                                bid( 1 ~ 4 )
-                                            pushed
-                                            poped
-                ppt
-                                pushed
-                                poped
-
-
-    pca_00 output
-2               mic
-                                open / close
-3               loud
-                                
-                                tip,         // communication tiping
-                                com,         // in commnunication 
-                                frozen,      // other in communication, frozen close
-                                tip_close,   // tip close
-                                frozen_close,
-                                lsn,         // broadcast or occ listening
-                                pa,          // pa_in / pa_out
-                                close,       // for all above
-
-4               uic78
-                                high level
-                                low level
-5               uic56
-                                high level
-                                low level 
-
-6               volume          
-                                volume size(0, 1, 2, 3)
-
-    pca_01 output
-                none
-
-    pca_10 output
-7               led             light / extinguish
-*/
-
 
 // pca9539 00
 #define PCA00_OMASK 0x0FFF
 #define O_00_MIC    0X0808
 #define O_00_LOUD   0x0417
-#define O_00_UIC78  0x0100
-#define O_00_78SHORT   0x0200
+#define O_00_UIC78S 0x0300
+//#define O_00_78SHORT   0x0200
 #define O_00_UIC56  0x0080
 #define O_00_VOLUME 0x0060
 
@@ -88,15 +28,15 @@ no  which       event           op
 #define O_10_LED_03 0x0400      // led: dcom
 #define O_10_LED_04 0x0800      // led: pa out
 
-#define PCA10_IMASK 0x001F
+#define PCA10_IMASK     0x001F
 #define I_10_BUT_MASK   0x000F  // button mask
-#define I_10_BUT_01 0x0001      // but: pa in
-#define I_10_BUT_02 0x0002      // but: pcom
-#define I_10_BUT_03 0x0004      // but: dcom
-#define I_10_BUT_04 0x0008      // but: pa out
+#define I_10_BUT_01     0x0001  // but: pa in
+#define I_10_BUT_02     0x0002  // but: pcom
+#define I_10_BUT_03     0x0004  // but: dcom
+#define I_10_BUT_04     0x0008  // but: pa out
 
 #define I_10_PPT_MASK   0x0010  // ppt mask
-#define I_10_PPT    0x0010      // ppt
+#define I_10_PPT        0x0010  // ppt
 
 #define MAX_PCA 3
 
@@ -144,8 +84,199 @@ no    rflag addr  rmask      wmask      old   cur   new   spec
     return;
 }
 
+static s8_t pca_write( struct chip_pca *pca, u16_t mask, u16_t value )
+{
+    if( 0 == pca )
+        return;
+    
+    pca->new &= ~(mask & pca->wmask);               // clear new
+    pca->new |= ((mask & pca->wmask) & value);      // set  new
+    pca->cur &= ~pca->wmask;                        // clear cur( write part )
+    pca->cur |= pca->new;                           // set cur( write part )
+
+/*
+pca->addr, out_reg, pca->cur, 
+
+if(!I2C_Start())return FALSE;               
+
+I2C_SendByte(Dev_Pca9539 | addr | I2C_Write);
+I2C_WaitAck();
+
+I2C_SendByte(reg);                          
+
+I2C_WaitAck();
+
+I2C_SendByte((u8)(Dat&0x00ff));
+I2C_WaitAck();
+I2C_SendByte((u8)(Dat >> 8));
+I2C_WaitAck();
+
+I2C_Stop();
+*/
+
+    return;
+}
+
+static s8_t pca_read( struct chip_pca *pca, u16_t *value )
+{
+/*
+pca->addr, in_reg, pca->cur
+
+if(!I2C_Start())return FALSE;
+
+I2C_SendByte(Dev_Pca9539 | addr | I2C_Write);
+  I2C_WaitAck();
+
+I2C_SendByte(reg);
+
+I2C_WaitAck();
+Systick_Delay_1ms(2);
 
 
+if(!I2C_Start())return FALSE;  //start
+I2C_SendByte(Dev_Pca9539 | addr | I2C_Read);
+I2C_WaitAck();
+Systick_Delay_1ms(10);
+
+*Dat = I2C_ReceiveByte();
+I2C_Ack();
+*Dat |= I2C_ReceiveByte()<<8;
+I2C_NoAck();
+
+I2C_Stop();
+
+*/    
+
+    return;
+}
+
+
+/* 
+void pca_out( u8_t id, u16_t value );       // set output
+
+s8_t pca_event(struct chip_event *e );        // get one event
+
+s8_t pca_check( u8_t id, u32_t *value );    // check ip
+
+s8_t pca_update();        // update input
+*/
+void pca_out( u8_t id, u16_t value )
+{
+    u16_t mask;
+    struct chip_pca *pca = 0;
+
+    if( id >= MAX_PCA_ID_OUT )
+        return;
+
+    switch( id )
+    {
+        case PCA_ID_OUT_MIC:
+            pca = &all_pca[0];
+            mask = O_00_MIC;
+            break;
+
+        case PCA_ID_OUT_LOUD:
+            pca = &all_pca[0];
+            mask = O_00_LOUD;
+            break;
+
+        case PCA_ID_OUT_UIC78:
+            pca = &all_pca[0];
+            mask = O_00_UIC78S;
+            break;   
+
+        case PCA_ID_OUT_UIC56:
+            pca = &all_pca[0];
+            mask = O_00_UIC56;
+            break;
+
+        case PCA_ID_OUT_VOLUME:
+            pca = &all_pca[0];
+            mask = O_00_VOLUME;
+            break;
+/*                                |-------------------------------|
+                                  |                               |
+    |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+     16   15  14  13 12  11  10  9   8   7    6   5   4   3   2   1
+    led1 1 -> 9
+    led2 2 -> 10
+    led3 3 -> 11
+    led4 4 -> 12
+*/
+        case PCA_ID_OUT_LED:
+            pca = &all_pca[2];
+            mask = (value & 0xff00);            
+            value = (value & 0xff)<<8;
+            break;
+
+        default:
+            break;
+    }
+
+    if( 0 != pca )
+        pca_write( pca, mask, value );
+
+    return;
+}
+
+/*
+typedef struct chip_pca{
+    u8_t rflag;     // new input flag
+    u8_t addr;      // i2c address
+    u16_t rmask;    // read mask
+    u16_t wmask;    // write mask
+    u16_t old;      // for read old store
+    u16_t cur;      // current value
+    u16_t new;      // for write new store
+    char *spec;
+}chip_pca_t;
+*/
+s8_t pca_event_fill( struct chip_pca *pca, struct chip_event *e )
+{
+    
+    return 0;
+}
+s8_t pca_event(struct chip_event *e )
+{
+    s8_t ret = 0;
+    u8_t i = 0;
+
+    if( 0 == e )
+        return -1;
+   
+    for( i = 0; i < MAX_PCA; i++ )
+    {
+        if( all_pca[i].cur != all_pca[i].old )
+        {
+            // fille e ;
+            return 0;
+        }
+    }
+    
+//    e->type =;
+    e->id = PCA_ID_IN_NONE;
+ 
+/*
+    if( all_pca[0].cur ! = all_pca[0].old )
+    {
+    }
+    else if( all_pca[1].cur != all_pca[1].old )
+    {
+    }
+    else if( all_pca[2].cur != all_pca[2].old )
+    {
+    }
+    else
+    {
+        ;
+    }
+*/
+    return 0;
+}
+
+s8_t pca_check( u8_t id, u32_t *value );    // check ip
+
+s8_t pca_update();        // update input
 
 
 
@@ -159,7 +290,7 @@ void dump_pca( )
 
     for( i = 0; i < MAX_PCA; i++ )
     {
-        dout( "%-5d %-#5x %-#5x %-#10x %-#10x %-5d %-5d %-5d %-10s\n",
+        dout( "%-5d %-#5x %-#5x %-#10x %-#10x %-#5x %-#5x %-#5x %-10s\n",
         i ,
         all_pca[ i ].rflag,
         all_pca[ i ].addr,

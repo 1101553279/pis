@@ -1,6 +1,7 @@
 #include "led.h"
 #include "ptime.h"
 #include "debug.h"
+#include "chip_pca.h"
 
 void led_init( struct led *led, u8_t no, led_cb_t cb, u32_t timeout )
 {
@@ -15,8 +16,8 @@ void led_init( struct led *led, u8_t no, led_cb_t cb, u32_t timeout )
     led->timeout = timeout;
     led->cb = cb;
 
-    if( led->cb )
-        led->cb( led->no, led->hl );
+//    if( led->cb )
+//        led->cb( PCA_TYPE_OUT, PCA_ID_OUT_LED, (led->no << 8)|led->hl );
 
     return;
 }
@@ -60,7 +61,11 @@ void led_con( struct led *led, u8_t op )
 
         //for led blink
         led->stime = ptime( );
-
+    }
+    
+//   if( led->cb )
+//        led->cb( PCA_TYPE_OUT, PCA_ID_OUT_LED, (led->no << 8)|led->hl );
+/*
         if( led->cb )
             led->cb( led->no, led->hl );
     }
@@ -69,7 +74,7 @@ void led_con( struct led *led, u8_t op )
         if( led->cb )
             led->cb( led->no, LV_L );
     }
-
+*/
     return;
 }
 
@@ -87,8 +92,8 @@ void led_check( struct led *led )
        led->hl = ( LV_H == led->hl ) ? LV_L: LV_H; 
        led->stime = ptime();
 
-       if( led->cb )
-           led->cb( led->no, led->hl );
+//       if( led->cb )
+//           led->cb( PCA_TYPE_OUT, PCA_ID_OUT_LED, (led->no << 8)|led->hl );
     }
 
     return;

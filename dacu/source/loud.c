@@ -176,6 +176,8 @@ void loud_con( struct loud *loud, u8_t type, u8_t op )
     if( type < MAX_UT && 0 != loud->cmdcb[type] ) 
         loud->cmdcb[type]( loud, op );
 
+    //call pca loud set
+
     return;
 }
 

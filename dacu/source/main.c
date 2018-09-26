@@ -5,11 +5,11 @@
 #include "chip_pca.h"
 
 
-void led_callback( u8_t ledno, u8_t hl )
+void led_callback( u8_t type, u8_t id, u8_t no_hl )
 {
     
     dout( "%s: time: %d, ledno: %d, hl: %s\n", 
-            __func__, ptime(), ledno, (LV_H == hl )?"H LEVEL": "L LEVEL" );
+            __func__, ptime(), id, (LV_H == (no_hl & 0xff) )?"H LEVEL": "L LEVEL" );
 
     return;
 }
@@ -20,11 +20,41 @@ int main( void )
     u8_t flag = 0;
     struct led e;
     struct loud u;
-    
+
+#if 1    
     pca_init( );
+    
+//    pca_out( PCA_ID_OUT_MIC, MIC_OPEN );
+//    pca_out( PCA_ID_OUT_LOUD, LOUD_TIP );
+//    pca_out( PCA_ID_OUT_LOUD, LOUD_COM );
+//    pca_out( PCA_ID_OUT_LOUD, LOUD_LSN );
+//    pca_out( PCA_ID_OUT_LOUD, LOUD_PA );
+//    pca_out( PCA_ID_OUT_UIC78, OUT_UIC78_H );
+//    pca_out( PCA_ID_OUT_UIC56, OUT_UIC56_H );
+//    pca_out( PCA_ID_OUT_VOLUME, VOLUME_3);
+//    pca_out( PCA_ID_OUT_VOLUME, VOLUME_2);
+//    pca_out( PCA_ID_OUT_VOLUME, VOLUME_1);
+//    pca_out( PCA_ID_OUT_LED, LED_PA_IN_H );
+//    pca_out( PCA_ID_OUT_LED, LED_PCOM_H );
+//    pca_out( PCA_ID_OUT_LED, LED_DCOM_H );
+//    pca_out( PCA_ID_OUT_LED, LED_PA_OUT_H );
+
+
+
+//    pca_out( PCA_ID_OUT_LED, LED_PA_OUT_L );
+//    pca_out( PCA_ID_OUT_LED, LED_DCOM_L );
+//    pca_out( PCA_ID_OUT_LED, LED_PCOM_L );
+//    pca_out( PCA_ID_OUT_LED, LED_PA_IN_L );
+//    pca_out( PCA_ID_OUT_VOLUME, VOLUME_0);
+//    pca_out( PCA_ID_OUT_UIC56, OUT_UIC56_L );
+//    pca_out( PCA_ID_OUT_UIC78, OUT_UIC78_L );
+//    pca_out( PCA_ID_OUT_MIC, MIC_CLOSE );
+//    pca_out( PCA_ID_OUT_LOUD, LOUD_CLOSE );
+
 
     dump_pca();
-    
+#endif 
+
 #if 0
     loud_init( &u );
     

@@ -29,7 +29,7 @@ enum led_hl{
     LV_H,       // high level
 };
 
-typedef void ( *led_cb_t )( u8_t ledno, u8_t hl );
+typedef void ( *led_cb_t )( u8_t type, u8_t id, u8_t value );
 
 struct led{
     u8_t no;      // pcom / dcom / pa_in / pa_out

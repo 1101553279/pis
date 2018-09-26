@@ -58,6 +58,7 @@ static struct chip_pca all_pca[ MAX_PCA ] = { 0 };
 struct chip_pca all_pca[ MAX_PCA ] = { 0 };
 #endif
 
+static u8_t event_check( struct chip_pca *pca );
 static s8_t pca_update();
 static s8_t chip_update( struct chip_pca *pca );
 static s8_t event_fill( struct chip_pca *pca, struct chip_event *e );
@@ -173,6 +174,7 @@ void pca_out( u8_t id, u16_t value )
     return;
 }
 
+
 /* get one event & store event data to e */
 s8_t pca_event(struct chip_event *e )
 {
@@ -187,7 +189,7 @@ s8_t pca_event(struct chip_event *e )
     for( i = 0; i < MAX_PCA; i++ )
     {
 //dout( "%d: cur = %#x, old = %#x\n", i, all_pca[i].cur, all_pca[i].old );
-        if( all_pca[i].cur != all_pca[i].old )
+        if( event_check( &all_pca[i] ) )
         {
             event_fill( &all_pca[i], e );
             return 0;
@@ -268,6 +270,12 @@ void dump_pca( )
 }
 
 /*======================= static functions ================*/
+static u8_t event_check( struct chip_pca *pca )
+{
+    return ( 0 !=pca ) &&
+        ((pca->cur & pca->rmask) != (pca->old & pca->rmask) );
+}
+
 static s8_t chip_write( u8_t addr, u8_t reg, u16_t data )
 {
 

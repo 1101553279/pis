@@ -1,0 +1,31 @@
+
+#define PCA00_IMASK 0xF000
+#define I_00_diag_78    0x8000
+#define I_00_diag_56    0x4000
+#define I_00_78         0x2000
+#define I_00_56         0x1000
+
+#define PCA01_IMASK 0x00FF
+#define I_01_IP     0x00FF
+
+#define PCA10_IMASK     0x001F
+#define I_10_BUT_MASK   0x000F  // button mask
+#define I_10_BUT_01     0x0001  // but: pa in
+#define I_10_BUT_02     0x0002  // but: pcom
+#define I_10_BUT_03     0x0004  // but: dcom
+#define I_10_BUT_04     0x0008  // but: pa out
+
+#define I_10_PPT_MASK   0x0010  // ppt mask
+#define I_10_PPT        0x0010  // ppt
+
+typedef struct chip_pca{
+//    u8_t no;
+    u8_t rflag;     // new input flag
+    u8_t addr;      // i2c address
+    u16_t rmask;    // read mask
+    u16_t wmask;    // write mask
+    u16_t old;      // for read old store
+    u16_t cur;      // current value
+    u16_t new;      // for write new store
+    char *spec;
+}chip_pca_t;

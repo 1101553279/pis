@@ -20,10 +20,125 @@ int main( void )
     u8_t flag = 0;
     struct led e;
     struct loud u;
+    struct chip_event en;
+    s8_t ret = 0;
+    u16_t value = 0;
 
-#if 1    
     pca_init( );
+    ret = pca_check( PCA_ID_CHECK_IP, &value );
+    dout( "ret = %d, value = %#x\n", ret, value );
+
+#if 0    
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
     
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+    
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+//     ip
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+
+// but && ppt 
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+    
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+    
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+    
+    
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+    
+    
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+    
+    all_pca[ 0 ].cur = 0;
+    all_pca[ 1 ].cur = 0;
+    all_pca[ 2 ].cur = 0;
+    
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+    
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+
+//     ip
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+
+// but && ppt 
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+    
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+    
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+    
+    
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+    
+    
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+
+    ret = pca_event( &en ); 
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+#endif    
+    dump_pca();
+#if 0
+
 //    pca_out( PCA_ID_OUT_MIC, MIC_OPEN );
 //    pca_out( PCA_ID_OUT_LOUD, LOUD_TIP );
 //    pca_out( PCA_ID_OUT_LOUD, LOUD_COM );

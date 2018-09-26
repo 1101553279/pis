@@ -38,9 +38,11 @@
 #define I_10_PPT_MASK   0x0010  // ppt mask
 #define I_10_PPT        0x0010  // ppt
 
+#if 1
 #define MAX_PCA 3
 
 typedef struct chip_pca{
+//    u8_t no;
     u8_t rflag;     // new input flag
     u8_t addr;      // i2c address
     u16_t rmask;    // read mask
@@ -52,6 +54,9 @@ typedef struct chip_pca{
 }chip_pca_t;
 
 static struct chip_pca all_pca[ MAX_PCA ] = { 0 };
+#else       // for debug
+struct chip_pca all_pca[ MAX_PCA ] = { 0 };
+#endif
 
 void pca_init( )
 {
@@ -59,13 +64,14 @@ void pca_init( )
     
     for( i = 0; i < MAX_PCA; i++ )
     {
+//        all_pca[ i ].no = i;
         all_pca[ i ].rflag = 0;
         all_pca[ i ].addr = i;
         all_pca[ i ].old = 0;
         all_pca[ i ].cur = 0;
         all_pca[ i ].new = 0;
     }
-    
+     
     all_pca[ 0 ].rmask = PCA00_IMASK;
     all_pca[ 0 ].wmask = PCA00_OMASK;
     all_pca[ 0 ].spec = "uic / loud / volume /mic..";
@@ -75,6 +81,16 @@ void pca_init( )
     all_pca[ 2 ].rmask = PCA10_IMASK;
     all_pca[ 2 ].wmask = PCA10_OMASK;
     all_pca[ 2 ].spec = "led / button / ppt";
+
+/*  for test
+    all_pca[ 0 ].cur = I_00_diag_78 | I_00_diag_56 | I_00_78 |
+                        I_00_56;
+    all_pca[ 1 ].cur = I_01_IP ;
+    all_pca[ 2 ].cur = I_10_BUT_01 |I_10_BUT_02 | I_10_BUT_03 | I_10_BUT_04 |I_10_PPT;
+
+    all_pca[ 1 ].cur = 0x1f;
+*/
+
 /*
 no    rflag addr  rmask      wmask      old   cur   new   spec      
 0     0     0     0xf000     0xfff      0     0     0     uic / loud / volume /mic..
@@ -84,17 +100,10 @@ no    rflag addr  rmask      wmask      old   cur   new   spec
     return;
 }
 
-static s8_t pca_write( struct chip_pca *pca, u16_t mask, u16_t value )
+static s8_t chip_write( u8_t addr, u8_t reg, u16_t data )
 {
-    if( 0 == pca )
-        return;
-    
-    pca->new &= ~(mask & pca->wmask);               // clear new
-    pca->new |= ((mask & pca->wmask) & value);      // set  new
-    pca->cur &= ~pca->wmask;                        // clear cur( write part )
-    pca->cur |= pca->new;                           // set cur( write part )
 
-/*
+    /*
 pca->addr, out_reg, pca->cur, 
 
 if(!I2C_Start())return FALSE;               
@@ -114,10 +123,25 @@ I2C_WaitAck();
 I2C_Stop();
 */
 
+    return 0;
+}
+
+static s8_t pca_write( struct chip_pca *pca, u16_t mask, u16_t value )
+{
+    if( 0 == pca )
+        return;
+    
+    pca->new &= ~(mask & pca->wmask);               // clear new
+    pca->new |= ((mask & pca->wmask) & value);      // set  new
+    pca->cur &= ~pca->wmask;                        // clear cur( write part )
+    pca->cur |= pca->new;                           // set cur( write part )
+
+// call chip write
+//
     return;
 }
 
-static s8_t pca_read( struct chip_pca *pca, u16_t *value )
+static s8_t chip_read( u8_t addr, u8_t reg, u16_t *data )
 {
 /*
 pca->addr, in_reg, pca->cur
@@ -147,18 +171,20 @@ I2C_Stop();
 
 */    
 
+    return 0;
+}
+
+static s8_t pca_read( struct chip_pca *pca, u16_t *value )
+{
+// chip read
+// set pca->cur
+//
     return;
 }
 
 
 /* 
-void pca_out( u8_t id, u16_t value );       // set output
-
-s8_t pca_event(struct chip_event *e );        // get one event
-
-s8_t pca_check( u8_t id, u32_t *value );    // check ip
-
-s8_t pca_update();        // update input
+set output
 */
 void pca_out( u8_t id, u16_t value )
 {
@@ -219,23 +245,133 @@ void pca_out( u8_t id, u16_t value )
     return;
 }
 
-/*
-typedef struct chip_pca{
-    u8_t rflag;     // new input flag
-    u8_t addr;      // i2c address
-    u16_t rmask;    // read mask
-    u16_t wmask;    // write mask
-    u16_t old;      // for read old store
-    u16_t cur;      // current value
-    u16_t new;      // for write new store
-    char *spec;
-}chip_pca_t;
-*/
-s8_t pca_event_fill( struct chip_pca *pca, struct chip_event *e )
+/* decide event */
+static u8_t event_is( struct chip_pca *pca, u16_t mask, u16_t event  )
 {
+    return (pca->cur & pca->rmask & mask & event) != (pca->old & pca->rmask & mask & event );
+}
+
+/* set cur -> old */
+static void event_clear( struct chip_pca *pca, u16_t mask, u16_t event )
+{
+/*
+    dout( "pca->cur = %#x, pca->rmask = %#x, mask = %#x, event = %#x\n",
+           pca->cur, pca->rmask, mask, event );
+*/
+    pca->old &= ~(pca->rmask & mask );
     
+    pca->old |= (pca->cur & pca->rmask & mask & event); 
+
+    return;
+}
+
+/* get cur value */
+static u16_t event_value( struct chip_pca *pca, u16_t mask )
+{
+    return pca->cur & pca->rmask & mask;
+}
+
+/*fill information: according to event*/
+static s8_t event_fill( struct chip_pca *pca, struct chip_event *e )
+{
+    u8_t id = PCA_ID_IN_NONE;
+    u16_t value;
+    
+    switch( pca->addr )
+    {
+        case 0x00:
+            if( event_is(pca, I_00_diag_78, I_00_diag_78 ) )
+            {
+                id = PCA_ID_IN_DIAG_78;
+                value = event_value( pca, I_00_diag_78 );
+                event_clear(pca, I_00_diag_78, I_00_diag_78 );
+            }
+            else if( event_is(pca, I_00_diag_56, I_00_diag_56 ) )
+            {
+                id = PCA_ID_IN_DIAG_56;
+                value = event_value( pca, I_00_diag_56 );
+                event_clear( pca, I_00_diag_56, I_00_diag_56 );
+            }
+            else if( event_is( pca, I_00_78, I_00_78 ) )
+            {
+                id = PCA_ID_IN_UIC_78;
+                value = event_value( pca, I_00_78 );
+                event_clear( pca, I_00_78, I_00_78 );
+            }
+            else if( event_is( pca, I_00_56, I_00_56 ) )
+            {
+                id = PCA_ID_IN_UIC_56;
+                value = event_value( pca, I_00_56 );
+                event_clear( pca, I_00_56, I_00_56 );
+            }
+            break;
+
+        case 0x01:
+            if( event_is( pca, I_01_IP, I_01_IP ) )
+            {
+                id = PCA_ID_IN_IP;
+                value = event_value( pca, PCA01_IMASK );
+                event_clear( pca, I_01_IP, I_01_IP );
+            }
+            break;
+        
+        case 0x02:
+            if( event_is( pca, I_10_PPT_MASK, I_10_PPT) )
+            {
+                id = PCA_ID_IN_PPT;
+                value = event_value( pca, I_10_PPT);
+                event_clear( pca, I_10_PPT_MASK, I_10_PPT);
+            }
+            else if( event_is( pca, I_10_BUT_MASK, I_10_BUT_04 ) )
+            {
+                id = PCA_ID_IN_BUT;
+                value = event_value( pca, I_10_BUT_04 );
+                value |= (1 << 11);
+                event_clear( pca, I_10_BUT_04, I_10_BUT_04);
+            }
+            else if( event_is( pca, I_10_BUT_MASK, I_10_BUT_03 ) )
+            {
+                id = PCA_ID_IN_BUT;
+                value = event_value( pca, I_10_BUT_03 );
+                value |= (1 << 10);
+                event_clear( pca, I_10_BUT_03, I_10_BUT_03);
+            }
+            else if( event_is( pca, I_10_BUT_MASK, I_10_BUT_02 ) )
+            {
+                id = PCA_ID_IN_BUT;
+                value = event_value( pca, I_10_BUT_02 );
+                value |= (1 << 9);
+//    dout( "value = %#x, but--02 = %#x\n", value, I_10_BUT_02 );
+                event_clear( pca, I_10_BUT_02, I_10_BUT_02);
+            }
+            else if( event_is( pca, I_10_BUT_MASK, I_10_BUT_01 ) )
+            {
+                id = PCA_ID_IN_BUT;
+                value = event_value( pca, I_10_BUT_01 );
+                value |= (1 << 8);
+                event_clear( pca, I_10_BUT_01, I_10_BUT_01);
+            }
+            
+            break;
+        
+        default:
+            e->type = 0;
+            e->id = PCA_ID_IN_NONE;
+            e->value = 0; 
+            break;
+    }
+
+    if( PCA_ID_IN_NONE == id ) 
+        return 1;
+    
+    e->type = 0; 
+    e->id = id;
+    e->value = value; 
+
     return 0;
 }
+
+/* get one event & store event data to e */
 s8_t pca_event(struct chip_event *e )
 {
     s8_t ret = 0;
@@ -246,37 +382,67 @@ s8_t pca_event(struct chip_event *e )
    
     for( i = 0; i < MAX_PCA; i++ )
     {
+//dout( "%d: cur = %#x, old = %#x\n", i, all_pca[i].cur, all_pca[i].old );
         if( all_pca[i].cur != all_pca[i].old )
         {
-            // fille e ;
+            event_fill( &all_pca[i], e );
             return 0;
         }
     }
     
-//    e->type =;
+    e->type = 0;
     e->id = PCA_ID_IN_NONE;
- 
-/*
-    if( all_pca[0].cur ! = all_pca[0].old )
+    e->value = 0; 
+
+    return 1;
+}
+
+// check ip
+s8_t pca_check( u8_t id, u16_t *value )
+{   
+    s8_t ret = 1;
+
+    if( 0 == value )
+        return -1;
+    
+    switch( id )
     {
+        case PCA_ID_CHECK_IP:
+            *value = event_value( &all_pca[1], I_01_IP );
+            ret = 0;
+            break;
+
+        default:
+            *value = 0;
+            ret = 1;
+            break;
     }
-    else if( all_pca[1].cur != all_pca[1].old )
-    {
-    }
-    else if( all_pca[2].cur != all_pca[2].old )
-    {
-    }
-    else
-    {
-        ;
-    }
-*/
+
+    return ret;
+}
+
+static s8_t chip_update( struct chip_pca *pca )
+{
+    if(  0 == pca )
+        return -1;
+
+//chip read
+//set pca cur value
+
     return 0;
 }
 
-s8_t pca_check( u8_t id, u32_t *value );    // check ip
+// update input
+s8_t pca_update()
+{
+    u8_t i = 0;
+    s8_t ret = 0;
 
-s8_t pca_update();        // update input
+    for( i = 0; i < MAX_PCA; i++ )
+        ret += chip_update( &all_pca[i] );
+
+    return ret;
+}
 
 
 
@@ -285,13 +451,14 @@ void dump_pca( )
 {
     u8_t i = 0;
 
-    dout( "%-5s %-5s %-5s %-10s %-10s %-5s %-5s %-5s %-10s\n",
+    dout( "%-5s %-5s %-5s %-10s %-10s %-10s %-10s %-10s %-10s\n",
           "no", "rflag", "addr", "rmask", "wmask", "old", "cur", "new", "spec" );
 
     for( i = 0; i < MAX_PCA; i++ )
     {
-        dout( "%-5d %-#5x %-#5x %-#10x %-#10x %-#5x %-#5x %-#5x %-10s\n",
-        i ,
+        dout( "%-5d %-#5x %-#5x %-#10x %-#10x %-#10x %-#10x %-#10x %-10s\n",
+//        all_pca[ i ].no ,
+        i,
         all_pca[ i ].rflag,
         all_pca[ i ].addr,
         all_pca[ i ].rmask,

@@ -76,10 +76,30 @@ typedef struct chip_event{
     u16_t value;    // op
 }chip_event_t;
 
+#if 0       //for debug
+#define MAX_PCA 3
+
+typedef struct chip_pca{
+//    u8_t no;
+    u8_t rflag;     // new input flag
+    u8_t addr;      // i2c address
+    u16_t rmask;    // read mask
+    u16_t wmask;    // write mask
+    u16_t old;      // for read old store
+    u16_t cur;      // current value
+    u16_t new;      // for write new store
+    char *spec;
+}chip_pca_t;
+#endif
+
 void pca_init( );
 void pca_out( u8_t id, u16_t value );
+s8_t pca_event(struct chip_event *e );
+s8_t pca_check( u8_t id, u16_t *value );
+s8_t pca_update();
+
 
 // for debug
 void dump_pca( );
-
+//extern struct chip_pca all_pca[ 3];
 #endif

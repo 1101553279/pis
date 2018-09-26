@@ -96,7 +96,7 @@ void pca_init( );
 void pca_out( u8_t id, u16_t value );
 s8_t pca_event(struct chip_event *e );
 s8_t pca_check( u8_t id, u16_t *value );
-s8_t pca_update();
+void pca_rflag( u8_t no );
 
 
 // for debug

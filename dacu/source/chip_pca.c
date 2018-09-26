@@ -58,6 +58,17 @@ static struct chip_pca all_pca[ MAX_PCA ] = { 0 };
 struct chip_pca all_pca[ MAX_PCA ] = { 0 };
 #endif
 
+static s8_t pca_update();
+static s8_t chip_update( struct chip_pca *pca );
+static s8_t event_fill( struct chip_pca *pca, struct chip_event *e );
+static u16_t event_value( struct chip_pca *pca, u16_t mask );
+static void event_clear( struct chip_pca *pca, u16_t mask, u16_t event );
+static u8_t event_is( struct chip_pca *pca, u16_t mask, u16_t event  );
+static s8_t pca_read( struct chip_pca *pca, u16_t *value );
+static s8_t chip_read( u8_t addr, u8_t reg, u16_t *data );
+static s8_t pca_write( struct chip_pca *pca, u16_t mask, u16_t value );
+static s8_t chip_write( u8_t addr, u8_t reg, u16_t data );
+
 void pca_init( )
 {
     u8_t i = 0;
@@ -100,6 +111,163 @@ no    rflag addr  rmask      wmask      old   cur   new   spec
     return;
 }
 
+/* 
+set output
+*/
+void pca_out( u8_t id, u16_t value )
+{
+    u16_t mask;
+    struct chip_pca *pca = 0;
+
+    if( id >= MAX_PCA_ID_OUT )
+        return;
+
+    switch( id )
+    {
+        case PCA_ID_OUT_MIC:
+            pca = &all_pca[0];
+            mask = O_00_MIC;
+            break;
+
+        case PCA_ID_OUT_LOUD:
+            pca = &all_pca[0];
+            mask = O_00_LOUD;
+            break;
+
+        case PCA_ID_OUT_UIC78:
+            pca = &all_pca[0];
+            mask = O_00_UIC78S;
+            break;   
+
+        case PCA_ID_OUT_UIC56:
+            pca = &all_pca[0];
+            mask = O_00_UIC56;
+            break;
+
+        case PCA_ID_OUT_VOLUME:
+            pca = &all_pca[0];
+            mask = O_00_VOLUME;
+            break;
+/*                                |-------------------------------|
+                                  |                               |
+    |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+     16   15  14  13 12  11  10  9   8   7    6   5   4   3   2   1
+    led1 1 -> 9
+    led2 2 -> 10
+    led3 3 -> 11
+    led4 4 -> 12
+*/
+        case PCA_ID_OUT_LED:
+            pca = &all_pca[2];
+            mask = (value & 0xff00);            
+            value = (value & 0xff)<<8;
+            break;
+
+        default:
+            break;
+    }
+
+    if( 0 != pca )
+        pca_write( pca, mask, value );
+
+    return;
+}
+
+/* get one event & store event data to e */
+s8_t pca_event(struct chip_event *e )
+{
+    s8_t ret = 0;
+    u8_t i = 0;
+
+    if( 0 == e )
+        return -1;
+    
+    pca_update( );
+
+    for( i = 0; i < MAX_PCA; i++ )
+    {
+//dout( "%d: cur = %#x, old = %#x\n", i, all_pca[i].cur, all_pca[i].old );
+        if( all_pca[i].cur != all_pca[i].old )
+        {
+            event_fill( &all_pca[i], e );
+            return 0;
+        }
+    }
+    
+    e->type = 0;
+    e->id = PCA_ID_IN_NONE;
+    e->value = 0; 
+
+    return 1;
+}
+
+// check ip
+s8_t pca_check( u8_t id, u16_t *value )
+{   
+    s8_t ret = 1;
+
+    if( 0 == value )
+        return -1;
+    
+    switch( id )
+    {
+        case PCA_ID_CHECK_IP:
+            *value = event_value( &all_pca[1], I_01_IP );
+            ret = 0;
+            break;
+
+        default:
+            *value = 0;
+            ret = 1;
+            break;
+    }
+
+    return ret;
+}
+
+/* mark for needing to update*/
+void pca_rflag( u8_t no )
+{
+    if( no >= MAX_PCA )
+        return;
+    
+    all_pca[ no ].rflag = 1;
+
+    return;
+}
+
+
+
+
+// only for debug
+void dump_pca( )
+{
+    u8_t i = 0;
+
+    dout( "%-5s %-5s %-5s %-10s %-10s %-10s %-10s %-10s %-10s\n",
+          "no", "rflag", "addr", "rmask", "wmask", "old", "cur", "new", "spec" );
+
+    for( i = 0; i < MAX_PCA; i++ )
+    {
+        dout( "%-5d %-#5x %-#5x %-#10x %-#10x %-#10x %-#10x %-#10x %-10s\n",
+//        all_pca[ i ].no ,
+        i,
+        all_pca[ i ].rflag,
+        all_pca[ i ].addr,
+        all_pca[ i ].rmask,
+        all_pca[ i ].wmask,
+        all_pca[ i ].old,
+        all_pca[ i ].cur,
+        all_pca[ i ].new,
+        (0 == all_pca[ i ].spec) ? "null": all_pca[i].spec );
+
+    }
+          
+    
+    return;
+}
+
+/*======================= static functions ================*/
 static s8_t chip_write( u8_t addr, u8_t reg, u16_t data )
 {
 
@@ -179,69 +347,6 @@ static s8_t pca_read( struct chip_pca *pca, u16_t *value )
 // chip read
 // set pca->cur
 //
-    return;
-}
-
-
-/* 
-set output
-*/
-void pca_out( u8_t id, u16_t value )
-{
-    u16_t mask;
-    struct chip_pca *pca = 0;
-
-    if( id >= MAX_PCA_ID_OUT )
-        return;
-
-    switch( id )
-    {
-        case PCA_ID_OUT_MIC:
-            pca = &all_pca[0];
-            mask = O_00_MIC;
-            break;
-
-        case PCA_ID_OUT_LOUD:
-            pca = &all_pca[0];
-            mask = O_00_LOUD;
-            break;
-
-        case PCA_ID_OUT_UIC78:
-            pca = &all_pca[0];
-            mask = O_00_UIC78S;
-            break;   
-
-        case PCA_ID_OUT_UIC56:
-            pca = &all_pca[0];
-            mask = O_00_UIC56;
-            break;
-
-        case PCA_ID_OUT_VOLUME:
-            pca = &all_pca[0];
-            mask = O_00_VOLUME;
-            break;
-/*                                |-------------------------------|
-                                  |                               |
-    |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
-     16   15  14  13 12  11  10  9   8   7    6   5   4   3   2   1
-    led1 1 -> 9
-    led2 2 -> 10
-    led3 3 -> 11
-    led4 4 -> 12
-*/
-        case PCA_ID_OUT_LED:
-            pca = &all_pca[2];
-            mask = (value & 0xff00);            
-            value = (value & 0xff)<<8;
-            break;
-
-        default:
-            break;
-    }
-
-    if( 0 != pca )
-        pca_write( pca, mask, value );
-
     return;
 }
 
@@ -371,56 +476,6 @@ static s8_t event_fill( struct chip_pca *pca, struct chip_event *e )
     return 0;
 }
 
-/* get one event & store event data to e */
-s8_t pca_event(struct chip_event *e )
-{
-    s8_t ret = 0;
-    u8_t i = 0;
-
-    if( 0 == e )
-        return -1;
-   
-    for( i = 0; i < MAX_PCA; i++ )
-    {
-//dout( "%d: cur = %#x, old = %#x\n", i, all_pca[i].cur, all_pca[i].old );
-        if( all_pca[i].cur != all_pca[i].old )
-        {
-            event_fill( &all_pca[i], e );
-            return 0;
-        }
-    }
-    
-    e->type = 0;
-    e->id = PCA_ID_IN_NONE;
-    e->value = 0; 
-
-    return 1;
-}
-
-// check ip
-s8_t pca_check( u8_t id, u16_t *value )
-{   
-    s8_t ret = 1;
-
-    if( 0 == value )
-        return -1;
-    
-    switch( id )
-    {
-        case PCA_ID_CHECK_IP:
-            *value = event_value( &all_pca[1], I_01_IP );
-            ret = 0;
-            break;
-
-        default:
-            *value = 0;
-            ret = 1;
-            break;
-    }
-
-    return ret;
-}
-
 static s8_t chip_update( struct chip_pca *pca )
 {
     if(  0 == pca )
@@ -433,46 +488,23 @@ static s8_t chip_update( struct chip_pca *pca )
 }
 
 // update input
-s8_t pca_update()
+static s8_t pca_update()
 {
     u8_t i = 0;
     s8_t ret = 0;
 
     for( i = 0; i < MAX_PCA; i++ )
-        ret += chip_update( &all_pca[i] );
+    {
+        if( 1 == all_pca[i].rflag )         // chip need update
+        {
+            ret += chip_update( &all_pca[i] );
+            0 == all_pca[i].rflag;
+        }
+    }
 
     return ret;
 }
 
-
-
-// only for debug
-void dump_pca( )
-{
-    u8_t i = 0;
-
-    dout( "%-5s %-5s %-5s %-10s %-10s %-10s %-10s %-10s %-10s\n",
-          "no", "rflag", "addr", "rmask", "wmask", "old", "cur", "new", "spec" );
-
-    for( i = 0; i < MAX_PCA; i++ )
-    {
-        dout( "%-5d %-#5x %-#5x %-#10x %-#10x %-#10x %-#10x %-#10x %-10s\n",
-//        all_pca[ i ].no ,
-        i,
-        all_pca[ i ].rflag,
-        all_pca[ i ].addr,
-        all_pca[ i ].rmask,
-        all_pca[ i ].wmask,
-        all_pca[ i ].old,
-        all_pca[ i ].cur,
-        all_pca[ i ].new,
-        (0 == all_pca[ i ].spec) ? "null": all_pca[i].spec );
-
-    }
-          
-    
-    return;
-}
 
 /*
 // pca9539, 00, mask

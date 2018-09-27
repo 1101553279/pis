@@ -95,13 +95,13 @@ void pca_init( )
     all_pca[ 2 ].spec = "led / button / ppt";
 
 /*  for test
+*/
     all_pca[ 0 ].cur = I_00_diag_78 | I_00_diag_56 | I_00_78 |
                         I_00_56;
     all_pca[ 1 ].cur = I_01_IP ;
     all_pca[ 2 ].cur = I_10_BUT_01 |I_10_BUT_02 | I_10_BUT_03 | I_10_BUT_04 |I_10_PPT;
 
-    all_pca[ 1 ].cur = 0x1f;
-*/
+//    all_pca[ 1 ].cur = 0x1f;
 
 /*
 no    rflag addr  rmask      wmask      old   cur   new   spec      
@@ -183,7 +183,8 @@ s8_t pca_event(struct chip_event *e )
 
     if( 0 == e )
         return -1;
-    
+
+//check whether need to update data, update data if need
     pca_update( );
 
     for( i = 0; i < MAX_PCA; i++ )
@@ -270,6 +271,7 @@ void dump_pca( )
 }
 
 /*======================= static functions ================*/
+/* check one chip has event, by comparing cur and old value */
 static u8_t event_check( struct chip_pca *pca )
 {
     return ( 0 !=pca ) &&
@@ -396,25 +398,25 @@ static s8_t event_fill( struct chip_pca *pca, struct chip_event *e )
             if( event_is(pca, I_00_diag_78, I_00_diag_78 ) )
             {
                 id = PCA_ID_IN_DIAG_78;
-                value = event_value( pca, I_00_diag_78 );
+                value = event_value( pca, I_00_diag_78 ) >> 15;
                 event_clear(pca, I_00_diag_78, I_00_diag_78 );
             }
             else if( event_is(pca, I_00_diag_56, I_00_diag_56 ) )
             {
                 id = PCA_ID_IN_DIAG_56;
-                value = event_value( pca, I_00_diag_56 );
+                value = event_value( pca, I_00_diag_56 ) >> 14;
                 event_clear( pca, I_00_diag_56, I_00_diag_56 );
             }
             else if( event_is( pca, I_00_78, I_00_78 ) )
             {
                 id = PCA_ID_IN_UIC_78;
-                value = event_value( pca, I_00_78 );
+                value = event_value( pca, I_00_78 ) >> 13;
                 event_clear( pca, I_00_78, I_00_78 );
             }
             else if( event_is( pca, I_00_56, I_00_56 ) )
             {
                 id = PCA_ID_IN_UIC_56;
-                value = event_value( pca, I_00_56 );
+                value = event_value( pca, I_00_56 ) >> 12;
                 event_clear( pca, I_00_56, I_00_56 );
             }
             break;
@@ -432,28 +434,28 @@ static s8_t event_fill( struct chip_pca *pca, struct chip_event *e )
             if( event_is( pca, I_10_PPT_MASK, I_10_PPT) )
             {
                 id = PCA_ID_IN_PPT;
-                value = event_value( pca, I_10_PPT);
+                value = event_value( pca, I_10_PPT) >> 4;
                 event_clear( pca, I_10_PPT_MASK, I_10_PPT);
             }
             else if( event_is( pca, I_10_BUT_MASK, I_10_BUT_04 ) )
             {
                 id = PCA_ID_IN_BUT;
-                value = event_value( pca, I_10_BUT_04 );
-                value |= (1 << 11);
+                value = event_value( pca, I_10_BUT_04 ) >> 3;
+                value |= (4 << 8);
                 event_clear( pca, I_10_BUT_04, I_10_BUT_04);
             }
             else if( event_is( pca, I_10_BUT_MASK, I_10_BUT_03 ) )
             {
                 id = PCA_ID_IN_BUT;
-                value = event_value( pca, I_10_BUT_03 );
-                value |= (1 << 10);
+                value = event_value( pca, I_10_BUT_03 ) >> 2;
+                value |= (3 << 8);
                 event_clear( pca, I_10_BUT_03, I_10_BUT_03);
             }
             else if( event_is( pca, I_10_BUT_MASK, I_10_BUT_02 ) )
             {
                 id = PCA_ID_IN_BUT;
-                value = event_value( pca, I_10_BUT_02 );
-                value |= (1 << 9);
+                value = event_value( pca, I_10_BUT_02 ) >> 1;
+                value |= (2 << 8);
 //    dout( "value = %#x, but--02 = %#x\n", value, I_10_BUT_02 );
                 event_clear( pca, I_10_BUT_02, I_10_BUT_02);
             }
@@ -489,13 +491,13 @@ static s8_t chip_update( struct chip_pca *pca )
     if(  0 == pca )
         return -1;
 
-//chip read
+//chip_read
 //set pca cur value
-
+//dout( "%s: pca no: %d be called!\n", __func__, pca->addr );
     return 0;
 }
 
-// update input
+// update input if need
 static s8_t pca_update()
 {
     u8_t i = 0;
@@ -506,7 +508,7 @@ static s8_t pca_update()
         if( 1 == all_pca[i].rflag )         // chip need update
         {
             ret += chip_update( &all_pca[i] );
-            0 == all_pca[i].rflag;
+            all_pca[i].rflag = 0;
         }
     }
 

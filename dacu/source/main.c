@@ -25,10 +25,25 @@ int main( void )
     u16_t value = 0;
 
     pca_init( );
+
+#if 0
+    pca_rflag( 0 );
+    pca_rflag( 1 );
+    pca_rflag( 2 );
+
+    ret = pca_event( &en );
+    dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
+            ret, en.type, en.id, en.value );
+#endif
+
+
+
+#if 0
     ret = pca_check( PCA_ID_CHECK_IP, &value );
     dout( "ret = %d, value = %#x\n", ret, value );
+#endif
 
-#if 0    
+#if 0
     ret = pca_event( &en ); 
     dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
             ret, en.type, en.id, en.value );
@@ -136,7 +151,9 @@ int main( void )
     dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
             ret, en.type, en.id, en.value );
 #endif    
+
     dump_pca();
+
 #if 0
 
 //    pca_out( PCA_ID_OUT_MIC, MIC_OPEN );

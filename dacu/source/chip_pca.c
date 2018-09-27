@@ -58,18 +58,22 @@ static struct chip_pca all_pca[ MAX_PCA ] = { 0 };
 struct chip_pca all_pca[ MAX_PCA ] = { 0 };
 #endif
 
+/* internal functions */
 static u8_t event_check( struct chip_pca *pca );
-static s8_t pca_update();
-static s8_t chip_update( struct chip_pca *pca );
-static s8_t event_fill( struct chip_pca *pca, struct chip_event *e );
-static u16_t event_value( struct chip_pca *pca, u16_t mask );
-static void event_clear( struct chip_pca *pca, u16_t mask, u16_t event );
-static u8_t event_is( struct chip_pca *pca, u16_t mask, u16_t event  );
-static s8_t pca_read( struct chip_pca *pca, u16_t *value );
-static s8_t chip_read( u8_t addr, u8_t reg, u16_t *data );
-static s8_t pca_write( struct chip_pca *pca, u16_t mask, u16_t value );
-static s8_t chip_write( u8_t addr, u8_t reg, u16_t data );
 
+static s8_t chip_write( u8_t addr, u8_t reg, u16_t data );
+static s8_t pca_write( struct chip_pca *pca, u16_t mask, u16_t value );
+
+static u8_t event_is( struct chip_pca *pca, u16_t mask, u16_t event  );
+static void event_clear( struct chip_pca *pca, u16_t mask, u16_t event );
+static u16_t event_value( struct chip_pca *pca, u16_t mask );
+static s8_t event_fill( struct chip_pca *pca, struct chip_event *e );
+
+static s8_t chip_read( u8_t addr, u8_t reg, u16_t *data );
+static s8_t pca_update( struct chip_pca *pca );
+static s8_t event_update();     //update all pca chips
+
+/* pca module init */
 void pca_init( )
 {
     u8_t i = 0;
@@ -185,11 +189,10 @@ s8_t pca_event(struct chip_event *e )
         return -1;
 
 //check whether need to update data, update data if need
-    pca_update( );
+    event_update( );
 
     for( i = 0; i < MAX_PCA; i++ )
     {
-//dout( "%d: cur = %#x, old = %#x\n", i, all_pca[i].cur, all_pca[i].old );
         if( event_check( &all_pca[i] ) )
         {
             event_fill( &all_pca[i], e );
@@ -270,12 +273,13 @@ void dump_pca( )
     return;
 }
 
-/*======================= static functions ================*/
+/*======================= internal functions ================*/
+
 /* check one chip has event, by comparing cur and old value */
 static u8_t event_check( struct chip_pca *pca )
 {
-    return ( 0 !=pca ) &&
-        ((pca->cur & pca->rmask) != (pca->old & pca->rmask) );
+    return ( 0 != pca ) &&
+           ((pca->cur & pca->rmask) != (pca->old & pca->rmask) );
 }
 
 static s8_t chip_write( u8_t addr, u8_t reg, u16_t data )
@@ -319,46 +323,6 @@ static s8_t pca_write( struct chip_pca *pca, u16_t mask, u16_t value )
     return;
 }
 
-static s8_t chip_read( u8_t addr, u8_t reg, u16_t *data )
-{
-/*
-pca->addr, in_reg, pca->cur
-
-if(!I2C_Start())return FALSE;
-
-I2C_SendByte(Dev_Pca9539 | addr | I2C_Write);
-  I2C_WaitAck();
-
-I2C_SendByte(reg);
-
-I2C_WaitAck();
-Systick_Delay_1ms(2);
-
-
-if(!I2C_Start())return FALSE;  //start
-I2C_SendByte(Dev_Pca9539 | addr | I2C_Read);
-I2C_WaitAck();
-Systick_Delay_1ms(10);
-
-*Dat = I2C_ReceiveByte();
-I2C_Ack();
-*Dat |= I2C_ReceiveByte()<<8;
-I2C_NoAck();
-
-I2C_Stop();
-
-*/    
-
-    return 0;
-}
-
-static s8_t pca_read( struct chip_pca *pca, u16_t *value )
-{
-// chip read
-// set pca->cur
-//
-    return;
-}
 
 /* decide event */
 static u8_t event_is( struct chip_pca *pca, u16_t mask, u16_t event  )
@@ -380,7 +344,7 @@ static void event_clear( struct chip_pca *pca, u16_t mask, u16_t event )
     return;
 }
 
-/* get cur value */
+/* get cur value by mask */
 static u16_t event_value( struct chip_pca *pca, u16_t mask )
 {
     return pca->cur & pca->rmask & mask;
@@ -486,19 +450,55 @@ static s8_t event_fill( struct chip_pca *pca, struct chip_event *e )
     return 0;
 }
 
-static s8_t chip_update( struct chip_pca *pca )
+/* read one pca9539 chip input value */
+static s8_t chip_read( u8_t addr, u8_t reg, u16_t *data )
 {
-    if(  0 == pca )
+/*
+pca->addr, in_reg, pca->cur
+
+if(!I2C_Start())return FALSE;
+
+I2C_SendByte(Dev_Pca9539 | addr | I2C_Write);
+  I2C_WaitAck();
+
+I2C_SendByte(reg);
+
+I2C_WaitAck();
+Systick_Delay_1ms(2);
+
+
+if(!I2C_Start())return FALSE;  //start
+I2C_SendByte(Dev_Pca9539 | addr | I2C_Read);
+I2C_WaitAck();
+Systick_Delay_1ms(10);
+
+*Dat = I2C_ReceiveByte();
+I2C_Ack();
+*Dat |= I2C_ReceiveByte()<<8;
+I2C_NoAck();
+
+I2C_Stop();
+
+*/    
+
+    return 0;
+}
+
+static s8_t pca_update( struct chip_pca *pca )
+{
+    u16_t data;
+
+    if( 0 == pca )
         return -1;
 
-//chip_read
+//static s8_t chip_read( u8_t addr, u8_t reg, u16_t *data )
 //set pca cur value
-//dout( "%s: pca no: %d be called!\n", __func__, pca->addr );
+
     return 0;
 }
 
 // update input if need
-static s8_t pca_update()
+static s8_t event_update()
 {
     u8_t i = 0;
     s8_t ret = 0;
@@ -507,7 +507,7 @@ static s8_t pca_update()
     {
         if( 1 == all_pca[i].rflag )         // chip need update
         {
-            ret += chip_update( &all_pca[i] );
+            ret += pca_update( &all_pca[i] );
             all_pca[i].rflag = 0;
         }
     }

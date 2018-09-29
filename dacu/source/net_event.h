@@ -10,8 +10,10 @@ enum net_in_id{
     NET_IN_ID_OCC = 0,      // listen
     NET_IN_ID_UIC_IDLE,     // pa
     NET_IN_ID_CAB_LINK,     // cab link info
-    NET_IN_ID_COM,          // dacu pecu com
+    NET_IN_ID_PCOM,          // dacu pecu com
+    NET_IN_ID_DCOM,          // dacu pecu com
     MAX_NET_IN_ID,
+    NET_IN_ID_NONE,
 };
 
 enum{

@@ -104,10 +104,25 @@ int main( void )
             dout( "%s: %s", "uic", "idle" );
         else if( NET_IN_ID_CAB_LINK == ei.id )
             dout( "%s: %s", "link", "none" );
-        else if( NET_IN_ID_COM == ei.id )
+        else if( NET_IN_ID_PCOM == ei.id )
         {
             dout( "%s: cmd = %#x, op = %#x, rd_cab = %#x, rd_type = %#x, rd_no = %#x, sd_cab = %#x, sd_dev = %#x, sd_no = %#x, dc_no = %#x",
-                  "com",
+                  "pcom",
+                  ei.data.com.cmd,
+                  ei.data.com.op,
+                  ei.data.com.rd_cab,
+                  ei.data.com.rd_type,
+                  ei.data.com.rd_no,
+                  ei.data.com.sd_cab,
+                  ei.data.com.sd_dev,
+                  ei.data.com.sd_no,
+                  ei.data.com.dc_no
+               );
+        }
+        else if( NET_IN_ID_DCOM == ei.id )
+        {
+            dout( "%s: cmd = %#x, op = %#x, rd_cab = %#x, rd_type = %#x, rd_no = %#x, sd_cab = %#x, sd_dev = %#x, sd_no = %#x, dc_no = %#x",
+                  "dcom",
                   ei.data.com.cmd,
                   ei.data.com.op,
                   ei.data.com.rd_cab,

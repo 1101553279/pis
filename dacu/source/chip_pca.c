@@ -99,12 +99,12 @@ void pca_init( )
     all_pca[ 2 ].spec = "led / button / ppt";
 
 /*  for test
-*/
     all_pca[ 0 ].cur = I_00_diag_78 | I_00_diag_56 | I_00_78 |
                         I_00_56;
     all_pca[ 1 ].cur = I_01_IP ;
     all_pca[ 2 ].cur = I_10_BUT_01 |I_10_BUT_02 | I_10_BUT_03 | I_10_BUT_04 |I_10_PPT;
 
+*/
 //    all_pca[ 1 ].cur = 0x1f;
 
 /*

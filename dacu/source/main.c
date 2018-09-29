@@ -3,6 +3,7 @@
 #include "loud.h"
 #include "debug.h"
 #include "chip_pca.h"
+#include "net_event.h"
 
 
 void led_callback( u8_t type, u8_t id, u8_t no_hl )
@@ -14,6 +15,56 @@ void led_callback( u8_t type, u8_t id, u8_t no_hl )
     return;
 }
 
+u8_t net_data[ 10 ][ 21 ] = { 
+                            {
+                                0xff, 0x01, 0xf9, 0x1, 0x1, 0x01, 0x01, 0x33,
+                                0x08, 0x32, 0x31, 0x31, 0x31, 0x31, 0x31, 0x30,
+                                0x31, 0x31, 0x31, 0x31, 0xfe
+                            }
+                            ,
+                            {
+                                0xff, 0x30, 0x04, 0x31, 0x30, 0x01, 0x30, 0x35, 
+                                0x31, 0xaa, 0x00, 0x00, 0x00, 0x00, 0x31, 0xfe
+//                              0xff 0x30   0x4   0x31  0x30  0x1   0x30  0x35
+//                              0x31 0xaa   0     0     0     0     0x31  0xfe 
+                            }
+                            ,   // 2
+                            {   // dacu request start
+                                0xff, 0x30, 0xf7, 0x31, 0x30, 0x4, 0x31, 0x36, 
+                                0x31, 0x31, 0x00, 0x00, 0x00, 0x00, 0x31, 0xfe
+                            },  // 3
+                            {   // dacu request stop
+                                0xff, 0x30, 0xf7, 0x31, 0x30, 0x4, 0x31, 0x36, 
+                                0x31, 0x32, 0x00, 0x00, 0x00, 0x00, 0x31, 0xfe
+                            },  // 4
+                            {   // pecu request start
+                                0xff, 0x30, 0xf7, 0x31, 0x30, 0x5, 0x31, 0x36, 
+                                0x31, 0x31, 0x00, 0x00, 0x00, 0x00, 0x31, 0xfe
+                            },  // 5
+                            {   // pecu request stop
+                                0xff, 0x30, 0xf7, 0x31, 0x30, 0x5, 0x31, 0x36, 
+                                0x31, 0x32, 0x00, 0x00, 0x00, 0x00, 0x31, 0xfe
+                            },
+                                // 6
+                            {   // dacu respone start
+                                0xff, 0x30, 0x04, 0x31, 0x30, 0x4, 0x31, 0x37,
+                                0x31, 0x31, 0x00, 0x00, 0x00, 0x00, 0x31, 0xfe
+                            },  // 7
+                            {   // dacu response stop
+                                0xff, 0x30, 0x04, 0x31, 0x30, 0x4, 0x31, 0x37,
+                                0x31, 0x32, 0x00, 0x00, 0x00, 0x00, 0x31, 0xfe
+                            },  // 8
+                            {   // pecu response start
+                                0xff, 0x30, 0x05, 0x31, 0x30, 0x5, 0x31, 0x37,
+                                0x31, 0x31, 0x00, 0x00, 0x00, 0x00, 0x31, 0xfe
+                            },  // 9 
+                            {   // pecu response stop
+                                0xff, 0x30, 0x05, 0x31, 0x30, 0x5, 0x31, 0x37,
+                                0x31, 0x32, 0x00, 0x00, 0x00, 0x00, 0x31, 0xfe
+                            },
+                            
+                            };
+                                    
 int main( void )
 {
     u8_t i  = 0;
@@ -21,10 +72,69 @@ int main( void )
     struct led e;
     struct loud u;
     struct chip_event en;
-    s8_t ret = 0;
+    s8_t ret = -1;
     u16_t value = 0;
+    struct event_info ei;
 
     pca_init( );
+
+#if 1
+    net_event_init( );
+   
+    net_event_parse( net_data[0], 21 );
+    net_event_parse( net_data[1], 16 );
+    net_event_parse( net_data[2], 16 ); // dacu request start
+//    net_event_parse( net_data[3], 16 ); // dacu request stop
+//    net_event_parse( net_data[4], 16 ); // pecu request start
+//    net_event_parse( net_data[5], 16 ); // pecu request stop
+//    net_event_parse( net_data[6], 16 ); // dacu response start
+//    net_event_parse( net_data[7], 16 ); // dacu response stop
+//    net_event_parse( net_data[8], 16 ); // pecu response start
+//    net_event_parse( net_data[9], 16 ); // pecu response stop
+    
+    ret = net_event( &ei );
+    ret = net_event( &ei );
+    ret = net_event( &ei );
+    if( 0 == ret )
+    {
+        dout( "type = %d, id = %d, ", ei.type, ei.id );
+        if( NET_IN_ID_OCC == ei.id )
+            dout( "occ: %s", (OCC_ON == ei.data.occ)?"on":"off" );
+        else if( NET_IN_ID_UIC_IDLE == ei.id )
+            dout( "%s: %s", "uic", "idle" );
+        else if( NET_IN_ID_CAB_LINK == ei.id )
+            dout( "%s: %s", "link", "none" );
+        else if( NET_IN_ID_COM == ei.id )
+        {
+            dout( "%s: cmd = %#x, op = %#x, rd_cab = %#x, rd_type = %#x, rd_no = %#x, sd_cab = %#x, sd_dev = %#x, sd_no = %#x, dc_no = %#x",
+                  "com",
+                  ei.data.com.cmd,
+                  ei.data.com.op,
+                  ei.data.com.rd_cab,
+                  ei.data.com.rd_type,
+                  ei.data.com.rd_no,
+                  ei.data.com.sd_cab,
+                  ei.data.com.sd_dev,
+                  ei.data.com.sd_no,
+                  ei.data.com.dc_no
+               );
+        }
+
+        dout( "\n" );
+    }
+    else
+        dout( "no net event\n" );
+/*
+enum net_in_id{
+    NET_IN_ID_OCC = 0,      // listen
+    NET_IN_ID_UIC_IDLE,     // pa
+    NET_IN_ID_CAB_LINK,     // cab link info
+    NET_IN_ID_COM,          // dacu pecu com
+    MAX_NET_IN_ID,
+};
+*/
+    dump_net_event();
+#endif
 
 #if 0
     pca_rflag( 0 );
@@ -150,9 +260,9 @@ int main( void )
     ret = pca_event( &en ); 
     dout( "ret = %d, en.type= %d, en.id = %d, en.value = %#x\n",
             ret, en.type, en.id, en.value );
-#endif    
 
     dump_pca();
+#endif    
 
 #if 0
 

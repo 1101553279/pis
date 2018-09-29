@@ -35,7 +35,5 @@ void debug_dump( u8_t *buff, u16_t len, void (*print)(u8_t ch ) )
     print( buff[in] );
   }
   
-  dout( "\r\n" );
-
   return;
 }

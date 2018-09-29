@@ -74,7 +74,7 @@ int main( void )
     struct chip_event en;
     s8_t ret = -1;
     u16_t value = 0;
-    struct event_info ei;
+    struct net_info ei;
 
     pca_init( );
 

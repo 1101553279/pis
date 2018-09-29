@@ -48,7 +48,7 @@ union net_union{
     }com;
 };
 
-typedef struct event_info{
+typedef struct net_info{
     u8_t update;
     u8_t type;      // TYPE_NET_IN
     u8_t id;        // 
@@ -57,7 +57,7 @@ typedef struct event_info{
 
 void net_event_init( void );
 void net_event_parse( u8_t *buff, u8_t len );
-s8_t net_event( struct event_info *e );
+s8_t net_event( struct net_info *e );
 
 //only for debug
 void dump_net_event( );

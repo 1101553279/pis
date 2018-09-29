@@ -1,3 +1,27 @@
+
+enum event_type{
+    EVENT_COM,      // intercom
+            // 
+    EVENT_OCC,      // occ listen
+    EVENT_PA,       // pa in/out
+    EVENT_BLSN,     // broadcast listen
+    EVENT_PPT,      // ppt pushed poped
+    EVENT_LINK,     // train link
+    EVENT_IP,       // ip dial
+};
+
+struct event{
+    u8_t type;
+
+};
+
+struct event_info{
+
+};
+
+
+
+
 ====== com module ==============================================================
 struct com{
     struct com_info{

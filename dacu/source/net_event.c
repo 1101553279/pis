@@ -45,7 +45,7 @@ struct cache_info{
 };
 
 struct cache_info cache_info[ MAX_NET_NO ];
-struct event_info event_info[ MAX_NET_IN_ID ];
+struct net_info net_info[ MAX_NET_IN_ID ];
 
 void net_event_init( )
 {
@@ -62,9 +62,9 @@ void net_event_init( )
 
     for( i = NET_IN_ID_OCC; i < MAX_NET_IN_ID; i++ )
     {
-        memset( &event_info[i], 0, sizeof(struct event_info) );
-        event_info[ i ].type = TYPE_NET_IN;
-        event_info[ i ].id = i;
+        memset( &net_info[i], 0, sizeof(struct net_info) );
+        net_info[ i ].type = TYPE_NET_IN;
+        net_info[ i ].id = i;
     } 
 
     return;
@@ -114,9 +114,9 @@ static void info_parse( struct cache_info *info, u8_t *buff, u8_t len )
             case NET_NO_OCC:
                 if( info->data[15] != buff[15] )
                 {
-                    event_info[NET_IN_ID_OCC].data.occ = (0x30 == buff[15]) ? OCC_OFF: OCC_ON;
+                    net_info[NET_IN_ID_OCC].data.occ = (0x30 == buff[15]) ? OCC_OFF: OCC_ON;
 
-                    event_info[NET_IN_ID_OCC].update = 1;
+                    net_info[NET_IN_ID_OCC].update = 1;
 
                     flag = 1;
                 }
@@ -129,17 +129,17 @@ static void info_parse( struct cache_info *info, u8_t *buff, u8_t len )
             case NET_NO_DACU_REQ:
                 if( info->data[6] != buff[6] || info->data[9] != buff[9] )
                 {
-                    event_info[NET_IN_ID_COM].data.com.cmd = COM_REQ;
-                    event_info[NET_IN_ID_COM].data.com.op = (0x31 == buff[9]) ? COM_REQ_START: COM_REQ_STOP;
-                    event_info[NET_IN_ID_COM].data.com.rd_cab = buff[1];
-                    event_info[NET_IN_ID_COM].data.com.rd_type = buff[2];
-                    event_info[NET_IN_ID_COM].data.com.rd_no = buff[3];
-                    event_info[NET_IN_ID_COM].data.com.sd_cab = buff[4];
-                    event_info[NET_IN_ID_COM].data.com.sd_dev = buff[5];
-                    event_info[NET_IN_ID_COM].data.com.sd_no = buff[6];
-                    event_info[NET_IN_ID_COM].data.com.dc_no = buff[10];
+                    net_info[NET_IN_ID_COM].data.com.cmd = COM_REQ;
+                    net_info[NET_IN_ID_COM].data.com.op = (0x31 == buff[9]) ? COM_REQ_START: COM_REQ_STOP;
+                    net_info[NET_IN_ID_COM].data.com.rd_cab = buff[1];
+                    net_info[NET_IN_ID_COM].data.com.rd_type = buff[2];
+                    net_info[NET_IN_ID_COM].data.com.rd_no = buff[3];
+                    net_info[NET_IN_ID_COM].data.com.sd_cab = buff[4];
+                    net_info[NET_IN_ID_COM].data.com.sd_dev = buff[5];
+                    net_info[NET_IN_ID_COM].data.com.sd_no = buff[6];
+                    net_info[NET_IN_ID_COM].data.com.dc_no = buff[10];
                     
-                    event_info[NET_IN_ID_COM].update = 1;
+                    net_info[NET_IN_ID_COM].update = 1;
 
                     flag = 1;
                 }
@@ -149,18 +149,18 @@ static void info_parse( struct cache_info *info, u8_t *buff, u8_t len )
             case NET_NO_TO_DACU:
                 if( info->data[3] != buff[3] || info->data[9] != buff[9] )
                 {
-                    event_info[NET_IN_ID_COM].data.com.cmd = COM_REP;
-                    event_info[NET_IN_ID_COM].data.com.op = (0x31 == buff[9]) ? COM_REP_START: COM_REP_STOP;
-                    event_info[NET_IN_ID_COM].data.com.rd_cab = buff[1];
-                    event_info[NET_IN_ID_COM].data.com.rd_type = buff[2];
-                    event_info[NET_IN_ID_COM].data.com.rd_no = buff[3];
-                    event_info[NET_IN_ID_COM].data.com.sd_cab = buff[4];
-                    event_info[NET_IN_ID_COM].data.com.sd_dev = buff[5];
-                    event_info[NET_IN_ID_COM].data.com.sd_no = buff[6];
-                    event_info[NET_IN_ID_COM].data.com.dc_no = buff[10];
+                    net_info[NET_IN_ID_COM].data.com.cmd = COM_REP;
+                    net_info[NET_IN_ID_COM].data.com.op = (0x31 == buff[9]) ? COM_REP_START: COM_REP_STOP;
+                    net_info[NET_IN_ID_COM].data.com.rd_cab = buff[1];
+                    net_info[NET_IN_ID_COM].data.com.rd_type = buff[2];
+                    net_info[NET_IN_ID_COM].data.com.rd_no = buff[3];
+                    net_info[NET_IN_ID_COM].data.com.sd_cab = buff[4];
+                    net_info[NET_IN_ID_COM].data.com.sd_dev = buff[5];
+                    net_info[NET_IN_ID_COM].data.com.sd_no = buff[6];
+                    net_info[NET_IN_ID_COM].data.com.dc_no = buff[10];
 
 
-                    event_info[NET_IN_ID_COM].update = 1;
+                    net_info[NET_IN_ID_COM].update = 1;
 
                     flag = 1;
                 }
@@ -184,7 +184,7 @@ static void info_parse( struct cache_info *info, u8_t *buff, u8_t len )
             info->len = len;
             memcpy( info->data, buff, len );
 
-            event_info[NET_IN_ID_UIC_IDLE].update = 1;
+            net_info[NET_IN_ID_UIC_IDLE].update = 1;
         }
     }
 
@@ -232,7 +232,7 @@ void net_event_parse( u8_t *buff, u8_t len )
 }
 
 /* get one event */
-s8_t net_event( struct event_info *e )
+s8_t net_event( struct net_info *e )
 {
     u8_t i;
     
@@ -241,11 +241,11 @@ s8_t net_event( struct event_info *e )
 
     for( i = NET_IN_ID_OCC; i < MAX_NET_IN_ID; i++ )
     {
-        if( 1 == event_info[i].update )
+        if( 1 == net_info[i].update )
         {
-            memcpy( e, &event_info[i], sizeof(struct event_info) );
+            memcpy( e, &net_info[i], sizeof(struct net_info) );
 
-            event_info[i].update = 0;
+            net_info[i].update = 0;
 
             return 0;
         }
@@ -286,11 +286,11 @@ void dump_net_event( )
     for( i = NET_IN_ID_OCC; i < MAX_NET_IN_ID; i++ )
     {
         dout( "%-10d %-10d %-5d  ",
-                event_info[i].update,
-                event_info[i].type,
-                event_info[i].id );
+                net_info[i].update,
+                net_info[i].type,
+                net_info[i].id );
         if( NET_IN_ID_OCC == i )
-            dout( "occ: %s", (OCC_ON == event_info[i].data.occ)?"on":"off" );
+            dout( "occ: %s", (OCC_ON == net_info[i].data.occ)?"on":"off" );
         else if( NET_IN_ID_UIC_IDLE == i )
             dout( "%s: %s", "uic", "idle" );
         else if( NET_IN_ID_CAB_LINK == i )
@@ -299,15 +299,15 @@ void dump_net_event( )
         {
             dout( "%s: cmd = %#x, op = %#x, rd_cab = %#x, rd_type = %#x, rd_no = %#x, sd_cab = %#x, sd_dev = %#x, sd_no = %#x, dc_no = %#x",
                   "com",
-                  event_info[i].data.com.cmd,
-                  event_info[i].data.com.op,
-                  event_info[i].data.com.rd_cab,
-                  event_info[i].data.com.rd_type,
-                  event_info[i].data.com.rd_no,
-                  event_info[i].data.com.sd_cab,
-                  event_info[i].data.com.sd_dev,
-                  event_info[i].data.com.sd_no,
-                  event_info[i].data.com.dc_no
+                  net_info[i].data.com.cmd,
+                  net_info[i].data.com.op,
+                  net_info[i].data.com.rd_cab,
+                  net_info[i].data.com.rd_type,
+                  net_info[i].data.com.rd_no,
+                  net_info[i].data.com.sd_cab,
+                  net_info[i].data.com.sd_dev,
+                  net_info[i].data.com.sd_no,
+                  net_info[i].data.com.dc_no
                );
         }
 

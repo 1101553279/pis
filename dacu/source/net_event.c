@@ -143,25 +143,7 @@ static void info_parse( struct cache_info *info, u8_t *buff, u8_t len )
                     flag = 1;
                 }
                 break;
-            case NET_NO_DACU_REQ:
-                if( info->data[6] != buff[6] || info->data[9] != buff[9] )
-                {
-                    net_info[NET_IN_ID_DCOM].data.com.cmd = COM_REQ;
-                    net_info[NET_IN_ID_DCOM].data.com.op = (0x31 == buff[9]) ? COM_REQ_START: COM_REQ_STOP;
-                    net_info[NET_IN_ID_DCOM].data.com.rd_cab = buff[1];
-                    net_info[NET_IN_ID_DCOM].data.com.rd_type = buff[2];
-                    net_info[NET_IN_ID_DCOM].data.com.rd_no = buff[3];
-                    net_info[NET_IN_ID_DCOM].data.com.sd_cab = buff[4];
-                    net_info[NET_IN_ID_DCOM].data.com.sd_dev = buff[5];
-                    net_info[NET_IN_ID_DCOM].data.com.sd_no = buff[6];
-                    net_info[NET_IN_ID_DCOM].data.com.dc_no = buff[10];
-                    
-                    net_info[NET_IN_ID_DCOM].update = 1;
-
-                    flag = 1;
-                }
-                break;
-
+            
             case NET_NO_TO_PECU:
                 if( info->data[3] != buff[3] || info->data[9] != buff[9] )
                 {
@@ -181,6 +163,26 @@ static void info_parse( struct cache_info *info, u8_t *buff, u8_t len )
                     flag = 1;
                 }
                 break;
+
+            case NET_NO_DACU_REQ:
+                if( info->data[6] != buff[6] || info->data[9] != buff[9] )
+                {
+                    net_info[NET_IN_ID_DCOM].data.com.cmd = COM_REQ;
+                    net_info[NET_IN_ID_DCOM].data.com.op = (0x31 == buff[9]) ? COM_REQ_START: COM_REQ_STOP;
+                    net_info[NET_IN_ID_DCOM].data.com.rd_cab = buff[1];
+                    net_info[NET_IN_ID_DCOM].data.com.rd_type = buff[2];
+                    net_info[NET_IN_ID_DCOM].data.com.rd_no = buff[3];
+                    net_info[NET_IN_ID_DCOM].data.com.sd_cab = buff[4];
+                    net_info[NET_IN_ID_DCOM].data.com.sd_dev = buff[5];
+                    net_info[NET_IN_ID_DCOM].data.com.sd_no = buff[6];
+                    net_info[NET_IN_ID_DCOM].data.com.dc_no = buff[10];
+                    
+                    net_info[NET_IN_ID_DCOM].update = 1;
+
+                    flag = 1;
+                }
+                break;
+
             case NET_NO_TO_DACU:
                 if( info->data[3] != buff[3] || info->data[9] != buff[9] )
                 {

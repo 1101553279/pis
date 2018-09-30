@@ -34,6 +34,11 @@
 #define LED_PA_OUT_H      0x0808
 #define LED_PA_OUT_L      0x0800
 
+#define BUT_READ_ID(id) (((id)&0x700)>>8)
+#define BUT_READ_VA(va) ((va)&0x1)
+
+
+
 /*
 enum pca_type{
     PCA_TYPE_IN,

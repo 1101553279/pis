@@ -27,32 +27,51 @@ enum event_type{
 
     EVENT_PCOM, 
 //            PCA_ID_IN_BUT ( pcom but )
+                        // pushed
 //            NET_IN_ID_PCOM,
+                        // req  start / stop 
+                        // rep  start / stop
 
-    EVENT_DCOM,      // intercom
+    EVENT_DCOM,
 //            PCA_ID_IN_UIC_78,
+                        // rising / falling
 //            PCA_ID_IN_BUT ( dcom but )
+                        // pushed
 //            NET_IN_ID_DCOM,
+                        // req start / stop
+                        // rep start / stop
 
-    EVENT_OCC,      // occ listen
+    EVENT_OCC,
 //            NET_IN_ID_OCC
+                        // start
+                        // stop
 
-    EVENT_PA,       // pa in/out
+    EVENT_PA,
 //            PCA_ID_IN_BUT ( pa in but )
+                        // pushed
 //            PCA_ID_IN_BUT ( pa out but )
+                        // pushed
 //            NET_IN_ID_UIC_IDLE,
 
-    EVENT_BLSN,     // broadcast listen
+
+    EVENT_BLSN,
 //            PCA_ID_IN_UIC_56,
+                        // start
+                        // stop
 
-    EVENT_PPT,      // ppt pushed poped
+    EVENT_PPT,
 //            PCA_ID_IN_PPT,
+                        // start
+                        // stop
 
-    EVENT_LINK,     // train link
+    EVENT_LINK,
 //            NET_IN_ID_CAB_LINK,
+                        // link
+                        // unlink
 
-    EVENT_IP,       // ip dial
-//            PCA_ID_IN_IP,
+    EVENT_IP,
+//            PCA_ID_IN_IP, 
+                        // ip changed
 };
 
 struct event{

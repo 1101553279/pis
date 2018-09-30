@@ -11,10 +11,11 @@ enum led_status{
 
 // led group index
 enum led_no{
-    LN_PCOM = 0,
-    LN_DCOM,
     LN_PAIN,
+    LN_PCOM,
+    LN_DCOM,
     LN_PAOUT,
+    MAX_LN,
 };
 
 enum led_op{
@@ -25,11 +26,11 @@ enum led_op{
 };
 
 enum led_hl{
-    LV_L = 0,       // low level
-    LV_H,       // high level
+    LV_OFF = 0,  // led off
+    LV_ON,       // led on
 };
 
-typedef void ( *led_cb_t )( u8_t type, u8_t id, u8_t value );
+typedef void ( *led_cb_t )( u8_t id, u16_t value );
 
 struct led{
     u8_t no;      // pcom / dcom / pa_in / pa_out
@@ -46,7 +47,7 @@ struct led{
 };
 
 /* call this first before using */
-void led_init( struct led *led, u8_t type, led_cb_t cb, u32_t timeout );
+void led_init( struct led *led, u8_t no, led_cb_t cb, u32_t timeout );
 
 // op one led
 void led_con( struct led *led, u8_t op );

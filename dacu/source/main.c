@@ -5,7 +5,7 @@
 #include "chip_pca.h"
 #include "net_event.h"
 
-
+/*
 void led_callback( u8_t type, u8_t id, u8_t no_hl )
 {
     
@@ -14,7 +14,7 @@ void led_callback( u8_t type, u8_t id, u8_t no_hl )
 
     return;
 }
-
+*/
 u8_t net_data[ 10 ][ 21 ] = { 
                             {
                                 0xff, 0x01, 0xf9, 0x1, 0x1, 0x01, 0x01, 0x33,
@@ -78,7 +78,7 @@ int main( void )
 
     pca_init( );
 
-#if 1
+#if 0
     net_event_init( );
    
     net_event_parse( net_data[0], 21 );

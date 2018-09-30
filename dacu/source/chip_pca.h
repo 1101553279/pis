@@ -7,14 +7,21 @@
 #define MIC_OPEN    0x0808
 #define MIC_CLOSE   0x0000
 
-#define LOUD_TIP    0x0410      // need modifying
-#define LOUD_COM    0x0411
-#define LOUD_LSN    0x0412
+#define LOUD_TIP    0x0001      // need modifying
+#define LOUD_COM    0x0406
+#define LOUD_LSN    0x0000
 #define LOUD_PA     0x0414
-#define LOUD_CLOSE  0x0000
+#define LOUD_CLOSE  0x0010
 
 #define OUT_UIC78_H     0x0100
-#define OUT_UIC78_L     0x0300
+#define OUT_UIC78_L     0x0200
+#define OUT_UIC78_D     0x0000          //default value
+/*
+#define OUT_UIC78_H     0x0100
+#define OUT_UIC78_L     0x0000
+#define OUT_UIC78_SH    0x0200
+#define OUT_UIC78_SL    0x0000
+*/
 
 #define OUT_UIC56_H     0x0080
 #define OUT_UIC56_L     0x0000
@@ -25,18 +32,19 @@
 #define VOLUME_3        0x0060
 
 //pca9539: 10
-#define LED_PA_IN_H       0x0101
-#define LED_PA_IN_L       0x0100
-#define LED_PCOM_H        0x0202
-#define LED_PCOM_L        0x0200
-#define LED_DCOM_H        0x0404
-#define LED_DCOM_L        0x0400
-#define LED_PA_OUT_H      0x0808
-#define LED_PA_OUT_L      0x0800
+#define LED_PA_IN_ON    0x0101
+#define LED_PA_IN_OFF   0x0100
+#define LED_PCOM_ON     0x0202
+#define LED_PCOM_OFF    0x0200
+#define LED_DCOM_ON     0x0404
+#define LED_DCOM_OFF    0x0400
+#define LED_PA_OUT_ON   0x0808
+#define LED_PA_OUT_OFF  0x0800
+#define LED_MASK        0x0F00
+#define LED_CON( led )  (LED_MASK &(led<<8))
 
-#define BUT_READ_ID(id) (((id)&0x700)>>8)
-#define BUT_READ_VA(va) ((va)&0x1)
-
+#define BUT_READ_ID(id) (((id)&0x700)>>8)   
+#define BUT_READ_VA(va) ((va)&0x1)          
 
 
 /*
@@ -63,15 +71,21 @@ enum pca_id_check{
 };
 
 enum pca_id_event{
-    PCA_ID_IN_NONE,
-    PCA_ID_IN_DIAG_78,
-    PCA_ID_IN_DIAG_56,
-    PCA_ID_IN_UIC_78,
-    PCA_ID_IN_UIC_56,
-    PCA_ID_IN_IP,
-    PCA_ID_IN_BUT,
-    PCA_ID_IN_PPT,
+    PCA_ID_IN_NONE,     //0
+    PCA_ID_IN_DIAG_78,  //1     diag infor
+    PCA_ID_IN_DIAG_56,  //2
+    PCA_ID_IN_UIC_78,   //3     dacu com
+    PCA_ID_IN_UIC_56,   //4     listen 
+    PCA_ID_IN_IP,       //5     ip dial info
+    PCA_ID_IN_BUT,      //6     button pushed poped
+    PCA_ID_IN_PPT,      //7     ppt pushed or poped
     MAX_PCA_ID_IN,
+};
+
+enum pca_type_event{
+    PCA_TYPE_IN_NONE,
+    PCA_TYPE_IN_CHIP,
+    MAX_PCA_TYPE_IN,
 };
 
 typedef struct chip_event{
@@ -97,7 +111,7 @@ typedef struct chip_pca{
 }chip_pca_t;
 #endif
 
-void pca_init( );
+void pca_init(void);
 void pca_out( u8_t id, u16_t value );
 s8_t pca_event(struct chip_event *e );
 s8_t pca_check( u8_t id, u16_t *value );
@@ -105,6 +119,7 @@ void pca_rflag( u8_t no );
 
 
 // for debug
-void dump_pca( );
+void dump_pca( void );
+//s8_t event_update();
 //extern struct chip_pca all_pca[ 3];
 #endif

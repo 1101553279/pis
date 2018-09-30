@@ -35,6 +35,7 @@ enum loud_type{
     MAX_UT,
 };
 
+struct loud;
 typedef void ( *cmd_cb_t )( struct loud *loud, u8_t op );
 
 struct loud{

@@ -188,7 +188,7 @@ static u8_t event_net( struct net_info *n, u32_t *value )
                 if(  COM_REP_START == n->data.com.op ) 
                     *value |= EVENT_DCOM_REQ_APT;
                 else 
-                    *value |= EVENT_DCOM_REQ_UNQPT;
+                    *value |= EVENT_DCOM_REQ_UNAPT;
             }
 
             *value |= EVENT_DCOM_REQ_RD_MASK & ((n->data.com.rd_no - 0x30)<<4);

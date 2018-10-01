@@ -9,6 +9,12 @@
 #define EVENT_DIAG_56       (0x2<<0)
 
 // EVENT_COM
+#define COM_EVENT_PD_MASK   (0x3<<14)
+#define COM_EVENT_TYPE_MASK (0X3<<12)
+#define COM_VALUE_PQ_MASK   (0xf<<8)
+#define COM_VALUE_RD_MASK   (0xf<<4)
+#define COM_VALUE_SD_MASK   (0xf<<0)
+
 #define EVENT_PCOM      (0x1<<14)
 /* | type | con / accept | rd_no | sd_no | 
  *   2         4            4       4
@@ -45,7 +51,7 @@
 #define EVENT_DCOM_REQ_CON      (0x3<<8)        // connect
 #define EVENT_DCOM_REQ_UNCON    (0x4<<8)        // unconnect
 #define EVENT_DCOM_REQ_APT      (0x5<<8)        // accept
-#define EVENT_DCOM_REQ_UNQPT    (0x6<<8)        // unaccept
+#define EVENT_DCOM_REQ_UNAPT    (0x6<<8)        // unaccept
 #define EVENT_DCOM_REQ_RD_MASK  (0xf<<4)
 #define EVENT_DCOM_REQ_SD_MASK  (0xf<<0)
 

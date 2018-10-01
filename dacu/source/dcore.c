@@ -1,10 +1,6 @@
 #include "dcore.h"
 #include "event.h"
 
-
-#define EVENT_PCOM_REQ_MASK
-#define EVENT_PCOM_VA(va, mask, sh) (((va)&(mask))>>(sh))
-
 static u8_t event_is( u32_t value, u32_t mask, u32_t cp )
 {
     return cp == (value & mask);
@@ -24,6 +20,7 @@ static void hand_com( struct dcore *core, u32_t *value )
         return;
 
     vu = *value;        // for operation easyily
+
     if( event_is(vu, COM_EVENT_PD_MASK, EVENT_PCOM) )
     {
         if( event_is(vu, COM_EVENT_TYPE_MASK, EVENT_PCOM_REP) )
@@ -106,9 +103,12 @@ static void hand_com( struct dcore *core, u32_t *value )
 
 void dcore_hand( struct dcore *core, u8_t type, u32_t *value )
 {
+    u32_t vu;
+
     if( 0 == core || EVENT_NONE == type || 0 == value )
         return;
 
+    vu = *value;        // for operation easyily
 
     switch( type )
     {

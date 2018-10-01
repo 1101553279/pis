@@ -1,54 +1,49 @@
 #include "event.h"
 
 
-
-
-
-
-void event_init( )
-{
-
-    return;
-}
-
+/* but handle */
 static u8_t event_but( u8_t id, u8_t va, u32_t *value )
 {
     u8_t type = EVENT_NONE;
     
     switch( id )
     {
-        case 4:
-            if( 0 ==  va )              // pushed
+        case BUT_ID_PA_OUT:
+            if( BUT_PUSHED ==  va )              // pushed
             {
                 type = EVENT_PA;
                 *value |= EVENT_PA_REP;
                 *value |= EVENT_PA_REP_BUT_OUT;
             }
             break;
-        case 3:
-            if( 1 == va )               // poped
+
+        case BUT_ID_DCOM:
+            if( BUT_POPED == va )               // poped
             {
                 type = EVENT_DCOM;
                 *value |= EVENT_DCOM_REP;
                 *value |= EVENT_DCOM_REP_BUT;
             }
             break;
-        case 2:
-            if( 1 == va )               // poped
+
+        case BUT_ID_PCOM:
+            if( BUT_POPED == va )               // poped
             {
                 type = EVENT_PCOM;
-                *value |= EVENT_DCOM_REP;
+                *value |= EVENT_PCOM_REP;
                 *value |= EVENT_PCOM_REP_BUT;
             }
             break;
-        case 1:
-            if( 0 == va )               // pushed
+
+        case BUT_ID_PA_IN:
+            if( BUT_PUSHED == va )               // pushed
             {
                 type = EVENT_PA;
                 *value |= EVENT_PA_REP;
                 *value |= EVENT_PA_REP_BUT_IN;
             }
             break;
+
         default:
             type = EVENT_NONE;
             break;
@@ -57,7 +52,7 @@ static u8_t event_but( u8_t id, u8_t va, u32_t *value )
     return type;
 }
 
-
+/* chip pca event to event */
 static u8_t event_pca( struct chip_event *e, u32_t *value )
 {
     u8_t type = EVENT_NONE;
@@ -108,9 +103,9 @@ static u8_t event_pca( struct chip_event *e, u32_t *value )
         case PCA_ID_IN_PPT:
             type = EVENT_PPT;
             if( 1 == e->value )
-                *value |= EVENT_PPT_REQ_PUSHED;
-            else
                 *value |= EVENT_PPT_REQ_POPED;
+            else
+                *value |= EVENT_PPT_REQ_PUSHED;
             break;
 
         default:
@@ -121,31 +116,7 @@ static u8_t event_pca( struct chip_event *e, u32_t *value )
     return type;
 }
 
-/*
-enum{
-    OCC_OFF = 0,
-    OCC_ON,
-};
-
-enum{
-    COM_REQ = 1,    //1
-    COM_REQ_START,  //2
-    COM_REQ_STOP,   //3
-    COM_REP,        //4
-    COM_REP_START,  //5
-    COM_REP_STOP,   //6
-};
-    EVENT_NONE,
-    EVENT_DIAG,
-    EVENT_PCOM, 
-    EVENT_DCOM,
-    EVENT_OCC,
-    EVENT_PA,
-    EVENT_BLSN,
-    EVENT_PPT,
-    EVENT_LINK,
-    EVENT_IP,
-*/
+/* net event to event */
 static u8_t event_net( struct net_info *n, u32_t *value )
 {
     u8_t type = EVENT_NONE;
@@ -230,7 +201,7 @@ static u8_t event_net( struct net_info *n, u32_t *value )
 
 }
 
-
+/* check one event && get one value */
 u8_t event_check( u32_t *value )
 {
     struct chip_event e;
@@ -249,28 +220,3 @@ u8_t event_check( u32_t *value )
 
     return type;
 }
-
-/*
-enum pca_id_event{
-    PCA_ID_IN_NONE,
-    PCA_ID_IN_DIAG_78,
-    PCA_ID_IN_DIAG_56,
-    PCA_ID_IN_UIC_78,
-    PCA_ID_IN_UIC_56,
-    PCA_ID_IN_IP,
-    PCA_ID_IN_BUT,
-    PCA_ID_IN_PPT,
-    MAX_PCA_ID_IN,
-};
-
-enum net_in_id{
-    NET_IN_ID_OCC = 0,      // listen
-    NET_IN_ID_UIC_IDLE,     // pa
-    NET_IN_ID_CAB_LINK,     // cab link info
-    NET_IN_ID_PCOM,          // dacu pecu com
-    NET_IN_ID_DCOM,          // dacu pecu com
-    MAX_NET_IN_ID,
-    NET_IN_ID_NONE,
-};
-
-*/

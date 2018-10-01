@@ -233,8 +233,7 @@ s8_t pca_event(struct chip_event *e )
     {
         if( event_check( &all_pca[i] ) )
         {
-            event_fill( &all_pca[i], e );
-            return 0;
+            return  event_fill( &all_pca[i], e );
         }
     }
     

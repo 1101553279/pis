@@ -46,6 +46,14 @@
 #define BUT_READ_ID(id) (((id)&0x700)>>8)   
 #define BUT_READ_VA(va) ((va)&0x1)          
 
+#define BUT_ID_PA_OUT   0x4
+#define BUT_ID_DCOM     0x3
+#define BUT_ID_PCOM     0x2
+#define BUT_ID_PA_IN    0x1
+
+#define BUT_PUSHED      0x0
+#define BUT_POPED       0x1
+
 
 /*
 enum pca_type{

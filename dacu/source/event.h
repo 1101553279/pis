@@ -8,13 +8,14 @@
 #define EVENT_DIAG_78       (0X1<<0)
 #define EVENT_DIAG_56       (0x2<<0)
 
+// EVENT_COM
+#define EVENT_PCOM      (0x1<<14)
 /* | type | con / accept | rd_no | sd_no | 
  *   2         4            4       4
  *   type: req / rep
  *   con
  *
  */
-// EVENT_PCOM
 #define EVENT_PCOM_REP      (0x1<<12)
 #define EVENT_PCOM_REP_BUT  (0x1<<8)
 
@@ -26,6 +27,7 @@
 #define EVENT_PCOM_REQ_RD_MASK  (0xf<<4)
 #define EVENT_PCOM_REQ_SD_MASK  (0xf<<0)
 
+#define EVENT_DCOM      (0x2<<14)
 /* | type | uic/but |   rising/ falling |
  *
  * | type | con / accept | rd_no | sd_no | 
@@ -34,7 +36,6 @@
  *   con
  *
  */
-// EVENT_DCOM
 #define EVENT_DCOM_REP      (0x1<<12)
 #define EVENT_DCOM_REP_BUT  (0x1<<8)
 
@@ -47,7 +48,6 @@
 #define EVENT_DCOM_REQ_UNQPT    (0x6<<8)        // unaccept
 #define EVENT_DCOM_REQ_RD_MASK  (0xf<<4)
 #define EVENT_DCOM_REQ_SD_MASK  (0xf<<0)
-
 
 // EVENT_OCC
 #define EVENT_OCC_REQ_OFF   (0x1<<0)
@@ -80,137 +80,27 @@
 // EVENT_IP
 #define EVENT_IP_REQ_MASK   0xff
 
-
-//addition
-
-
+//all event type
 enum event_type{
     EVENT_NONE,
-    EVENT_DIAG,
-//            PCA_ID_IN_DIAG_78,
-//            PCA_ID_IN_DIAG_56,
-
-    EVENT_PCOM, 
-//            PCA_ID_IN_BUT ( pcom but )
-                        // pushed
-//            NET_IN_ID_PCOM,
-                        // req  start / stop 
-                        // rep  start / stop
-
-    EVENT_DCOM,
-//            PCA_ID_IN_UIC_78,
-                        // rising / falling
-//            PCA_ID_IN_BUT ( dcom but )
-                        // pushed
-//            NET_IN_ID_DCOM,
-                        // req start / stop
-                        // rep start / stop
-
-    EVENT_OCC,
-//            NET_IN_ID_OCC
-                        // start
-                        // stop
-
-    EVENT_PA,
-//            PCA_ID_IN_BUT ( pa in but )
-                        // pushed
-//            PCA_ID_IN_BUT ( pa out but )
-                        // pushed
-//            NET_IN_ID_UIC_IDLE,
-
-
-    EVENT_BLSN,
-//            PCA_ID_IN_UIC_56,
-                        // start // stop
-
-    EVENT_PPT,
-//            PCA_ID_IN_PPT,
-                        // start
-                        // stop
-
-    EVENT_LINK,
-//            NET_IN_ID_CAB_LINK,
-                        // link
-                        // unlink
-
-    EVENT_IP,
-//            PCA_ID_IN_IP, 
-                        // ip changed
+    EVENT_DIAG, // uic78 diag or uic56 diag
+    EVENT_COM,  // EVENT_PCOM
+                // EVENT_DCOM
+                    // pcom pushed
+                        // pecu req  start / stop 
+                        // other dacu rep  start / stop
+                    // uic78 rising / falling or dcom pushed
+                        // other dacu req start / stop
+                        // other dacu rep start / stop
+    EVENT_OCC,  // occ start / stop
+    EVENT_PA,   // but in/out pushed or NET_IN_ID_UIC_IDLE,
+    EVENT_BLSN, // start / stop
+    EVENT_PPT,  // start / stop
+    EVENT_LINK, // link / unlink
+    EVENT_IP,   // ip changed
     MAX_EVENT,
 };
 
-
-void event_init( void );
 u8_t event_check( u32_t *value );
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#if 0
-enum event_type{
-    EVENT_DIAG,
-//            PCA_ID_IN_DIAG_78,
-//            PCA_ID_IN_DIAG_56,
-
-    EVENT_PCOM, 
-//            PCA_ID_IN_BUT ( pcom but )
-                        // pushed
-//            NET_IN_ID_PCOM,
-                        // req  start / stop 
-                        // rep  start / stop
-
-    EVENT_DCOM,
-//            PCA_ID_IN_UIC_78,
-                        // rising / falling
-//            PCA_ID_IN_BUT ( dcom but )
-                        // pushed
-//            NET_IN_ID_DCOM,
-                        // req start / stop
-                        // rep start / stop
-
-    EVENT_OCC,
-//            NET_IN_ID_OCC
-                        // start
-                        // stop
-
-    EVENT_PA,
-//            PCA_ID_IN_BUT ( pa in but )
-                        // pushed
-//            PCA_ID_IN_BUT ( pa out but )
-                        // pushed
-//            NET_IN_ID_UIC_IDLE,
-
-
-    EVENT_BLSN,
-//            PCA_ID_IN_UIC_56,
-                        // start
-                        // stop
-
-    EVENT_PPT,
-//            PCA_ID_IN_PPT,
-                        // start
-                        // stop
-
-    EVENT_LINK,
-//            NET_IN_ID_CAB_LINK,
-                        // link
-                        // unlink
-
-    EVENT_IP,
-//            PCA_ID_IN_IP, 
-                        // ip changed
-};
-#endif
 #endif

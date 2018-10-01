@@ -1,6 +1,5 @@
 #include "event.h"
 
-
 /* but handle */
 static u8_t event_but( u8_t id, u8_t va, u32_t *value )
 {
@@ -20,7 +19,8 @@ static u8_t event_but( u8_t id, u8_t va, u32_t *value )
         case BUT_ID_DCOM:
             if( BUT_POPED == va )               // poped
             {
-                type = EVENT_DCOM;
+                type = EVENT_COM;
+                *value |= EVENT_DCOM;
                 *value |= EVENT_DCOM_REP;
                 *value |= EVENT_DCOM_REP_BUT;
             }
@@ -29,7 +29,8 @@ static u8_t event_but( u8_t id, u8_t va, u32_t *value )
         case BUT_ID_PCOM:
             if( BUT_POPED == va )               // poped
             {
-                type = EVENT_PCOM;
+                type = EVENT_COM;
+                *value |= EVENT_PCOM;
                 *value |= EVENT_PCOM_REP;
                 *value |= EVENT_PCOM_REP_BUT;
             }
@@ -75,7 +76,8 @@ static u8_t event_pca( struct chip_event *e, u32_t *value )
             break;
 
         case PCA_ID_IN_UIC_78:
-            type = EVENT_DCOM;
+            type = EVENT_COM;
+            *value |= EVENT_DCOM;
             *value |= EVENT_DCOM_REQ;
             if( 1 == e->value )
                 *value |= EVENT_DCOM_REQ_RING;
@@ -145,7 +147,8 @@ static u8_t event_net( struct net_info *n, u32_t *value )
             break;
 
         case NET_IN_ID_PCOM:
-            type = EVENT_PCOM;
+            type = EVENT_COM;
+            *value |= EVENT_PCOM;
             *value |= EVENT_PCOM_REQ;
 
             if(COM_REQ ==  n->data.com.cmd )
@@ -169,7 +172,8 @@ static u8_t event_net( struct net_info *n, u32_t *value )
             break;
 
         case NET_IN_ID_DCOM:
-            type = EVENT_DCOM;
+            type = EVENT_COM;
+            *value |= EVENT_DCOM;
             *value |= EVENT_DCOM_REQ;
 
             if(COM_REQ ==  n->data.com.cmd )

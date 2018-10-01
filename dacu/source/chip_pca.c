@@ -419,21 +419,21 @@ static s8_t event_fill( struct chip_pca *pca, struct chip_event *e )
             {
                 id = PCA_ID_IN_BUT;
                 value = event_value( pca, I_10_BUT_04 ) >> 3;
-                value |= (4 << 8);
+                value |= (BUT_ID_PA_OUT << 8);
                 event_clear( pca, I_10_BUT_04, I_10_BUT_04);
             }
             else if( event_is( pca, I_10_BUT_MASK, I_10_BUT_03 ) )
             {
                 id = PCA_ID_IN_BUT;
                 value = event_value( pca, I_10_BUT_03 ) >> 2;
-                value |= (3 << 8);
+                value |= (BUT_ID_DCOM << 8);
                 event_clear( pca, I_10_BUT_03, I_10_BUT_03);
             }
             else if( event_is( pca, I_10_BUT_MASK, I_10_BUT_02 ) )
             {
                 id = PCA_ID_IN_BUT;
                 value = event_value( pca, I_10_BUT_02 ) >> 1;
-                value |= (2 << 8);
+                value |= (BUT_ID_PCOM << 8);
 //    dout( "value = %#x, but--02 = %#x\n", value, I_10_BUT_02 );
                 event_clear( pca, I_10_BUT_02, I_10_BUT_02);
             }
@@ -441,7 +441,7 @@ static s8_t event_fill( struct chip_pca *pca, struct chip_event *e )
             {
                 id = PCA_ID_IN_BUT;
                 value = event_value( pca, I_10_BUT_01 );
-                value |= (1 << 8);
+                value |= (BUT_ID_PA_IN << 8);
                 event_clear( pca, I_10_BUT_01, I_10_BUT_01);
             }
             

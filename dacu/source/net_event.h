@@ -33,7 +33,7 @@ enum{
 union net_union{
     u8_t occ;
     u8_t cablink;
-    struct com{
+    struct net_com{
         u8_t cmd;       // request or response
         u8_t op;        // operation
                         // request start    -> pecu / dacu send
